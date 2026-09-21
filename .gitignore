@@ -1,0 +1,29 @@
+# ============================================================
+#  .gitignore  —  o que NÃO deve ir para o Git/GitHub
+# ------------------------------------------------------------
+#  Arquivos gerados pela build, segredos e configs locais da máquina.
+# ============================================================
+
+*.iml
+.gradle/
+/local.properties          # caminho do SDK na SUA máquina (não serve para outros)
+/.idea/
+.DS_Store
+/build/
+/app/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Segredo do Firebase (chave do app). Entra depois, na Fase 2 — nunca versionar.
+google-services.json
+
+# Chave de assinatura do app (Play Store). NUNCA vá para o Git.
+*.jks
+*.keystore
+keystore.properties
+
+# Referências internas da loja (IDs, fingerprints, e-mails). Não versionar.
+store/signing-info.md
+store/testers.md

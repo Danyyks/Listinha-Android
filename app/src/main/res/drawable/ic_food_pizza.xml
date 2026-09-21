@@ -1,0 +1,11 @@
+<!-- ic_food_pizza.xml  ===  salgado (fatia de pizza). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#00000000" android:strokeColor="#8672AD" android:strokeWidth="1.7"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M4,7 L20,7 L12,21 Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#8672AD" android:strokeWidth="1.7"
+        android:strokeLineCap="round" android:pathData="M5.6,9.4 L18.4,9.4" />
+    <path android:fillColor="#8672AD" android:pathData="M10.4,11.6 a1,1 0 1 0 0.01,0 z" />
+    <path android:fillColor="#8672AD" android:pathData="M13.4,15 a1,1 0 1 0 0.01,0 z" />
+</vector>

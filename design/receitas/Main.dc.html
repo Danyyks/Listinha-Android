@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #6E5A94; } a:hover { color: #574471; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<!-- ===== Moldura do celular (390x844) ===== -->
+<div style="width: 390px; height: 844px; background: #EDE7F5; display: flex; flex-direction: column; font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; overflow: hidden;">
+
+  <!-- ===== Área rolável (tudo menos a barra de baixo) ===== -->
+  <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+
+    <!-- Top bar: logo (roxo) + nome da seção, no mesmo padrão da tela Lista -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 20px 16px 4px;">
+      <svg viewBox="0 0 1024 1024" width="30" height="30" style="color: #6E5A94; flex: none;">
+        <g transform="translate(-84,-51)" fill="currentColor">
+          <path d="M252,255 C252,222 276,198 309,198 C368,198 425,238 443,300 L457,349 C464,372 480,386 505,389 L875,389 C902,389 921,412 916,438 L877,620 C872,648 850,665 821,665 L470,665 C442,665 418,646 412,620 L369,429 L351,348 C344,316 326,296 296,288 L277,283 C262,279 252,268 252,255 Z"/>
+          <path d="M414,668 C386,689 369,723 369,760 C369,853 483,929 641,929 C790,929 900,865 941,768 C949,749 939,728 919,720 C900,712 879,721 871,741 C839,816 750,858 641,858 C526,858 440,811 440,758 C440,737 450,719 467,705 C484,691 486,667 471,651 C456,635 431,638 414,668 Z"/>
+          <path d="M479,770 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0 z"/>
+          <path d="M696,770 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0 z"/>
+        </g>
+      </svg>
+      <span style="font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif; font-size: 24px; font-weight: 700; color: #6E5A94;">Receitas</span>
+    </div>
+    <div style="padding: 0 16px 12px; color: #6B6178; font-size: 13px;">Suas receitas favoritas, prontas pra virar lista</div>
+
+    <!-- Campo de busca (cantos 12, borda outline, igual aos campos do app) -->
+    <div style="display: flex; align-items: center; gap: 8px; margin: 0 16px 14px; background: #FFFFFF; border: 1px solid #D8D0E4; border-radius: 12px; padding: 11px 12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B6178" stroke-width="2" stroke-linecap="round" style="flex: none;">
+        <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/>
+      </svg>
+      <span style="color: #6B6178; font-size: 14px;">Buscar receita...</span>
+    </div>
+
+    <!-- Botão primário: Nova receita (grátis) -->
+    <button style="margin: 0 16px 10px; height: 50px; border: none; border-radius: 15px; background: #6E5A94; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Nova receita
+    </button>
+
+    <!-- Botão secundário: Gerar com IA (Premium) — selo PRO à direita, sem emoji -->
+    <button style="margin: 0 16px 18px; height: 50px; border: 1px solid #D8D0E4; border-radius: 15px; background: #FFFFFF; color: #6E5A94; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="1.8" stroke-linejoin="round" style="flex: none;">
+        <path d="M12 3 L13.6 9.2 L20 12 L13.6 14.8 L12 21 L10.4 14.8 L4 12 L10.4 9.2 Z"/>
+      </svg>
+      <span style="flex: 1; text-align: left;">Gerar receita com IA</span>
+      <span style="background: #6E5A94; color: #FFFFFF; font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px;">PRO</span>
+    </button>
+
+    <!-- Cabeçalho da lista -->
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 0 16px 10px;">
+      <span style="font-size: 15px; font-weight: 700; color: #2B2233;">Minhas receitas</span>
+      <span style="font-size: 12px; color: #6B6178;">4 receitas</span>
+    </div>
+
+    <!-- ===== Cards de receita ===== -->
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px;">
+
+      <!-- Card 1 -->
+      <div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 20px; padding: 12px; box-shadow: 0 1px 3px rgba(43,34,51,.06);">
+        <div style="width: 54px; height: 54px; border-radius: 14px; background: #E7E0F2; display: flex; align-items: center; justify-content: center; flex: none;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8672AD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 11 h14 a1 1 0 0 1 1 1 a7 7 0 0 1 -14 0 a1 1 0 0 1 -1 -1 Z"/><line x1="3" y1="20" x2="21" y2="20"/><path d="M9 8 c0 -1.5 1.5 -1.5 1.5 -3"/><path d="M13.5 8 c0 -1.5 1.5 -1.5 1.5 -3"/>
+          </svg>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; color: #2B2233;">Strogonoff de frango</span>
+          <div style="display: flex; align-items: center; gap: 12px; color: #6B6178; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20 a6.5 6.5 0 0 1 13 0"/></svg>
+              4 porções
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+              9 itens
+            </span>
+          </div>
+        </div>
+        <button style="width: 40px; height: 40px; border-radius: 999px; border: none; background: #E7E0F2; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+        </button>
+      </div>
+
+      <!-- Card 2 -->
+      <div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 20px; padding: 12px; box-shadow: 0 1px 3px rgba(43,34,51,.06);">
+        <div style="width: 54px; height: 54px; border-radius: 14px; background: #E7E0F2; display: flex; align-items: center; justify-content: center; flex: none;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8672AD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="7" rx="7" ry="2.6"/><path d="M5 7 v3 c0 1.4 3.1 2.6 7 2.6 s7 -1.2 7 -2.6 v-3"/><path d="M5 12 v3 c0 1.4 3.1 2.6 7 2.6 s7 -1.2 7 -2.6 v-3"/>
+          </svg>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; color: #2B2233;">Panqueca de banana</span>
+          <div style="display: flex; align-items: center; gap: 12px; color: #6B6178; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20 a6.5 6.5 0 0 1 13 0"/></svg>
+              6 porções
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+              5 itens
+            </span>
+          </div>
+        </div>
+        <button style="width: 40px; height: 40px; border-radius: 999px; border: none; background: #E7E0F2; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+        </button>
+      </div>
+
+      <!-- Card 3 -->
+      <div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 20px; padding: 12px; box-shadow: 0 1px 3px rgba(43,34,51,.06);">
+        <div style="width: 54px; height: 54px; border-radius: 14px; background: #E7E0F2; display: flex; align-items: center; justify-content: center; flex: none;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8672AD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 13 a8 5 0 0 0 16 0 Z"/><path d="M12 13 c-3 -4 1 -8 4 -8 c-1 3 -1 5 -4 8 Z"/>
+          </svg>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; color: #2B2233;">Salada tropical</span>
+          <div style="display: flex; align-items: center; gap: 12px; color: #6B6178; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20 a6.5 6.5 0 0 1 13 0"/></svg>
+              2 porções
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+              7 itens
+            </span>
+          </div>
+        </div>
+        <button style="width: 40px; height: 40px; border-radius: 999px; border: none; background: #E7E0F2; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+        </button>
+      </div>
+
+      <!-- Card 4 -->
+      <div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 20px; padding: 12px; box-shadow: 0 1px 3px rgba(43,34,51,.06);">
+        <div style="width: 54px; height: 54px; border-radius: 14px; background: #E7E0F2; display: flex; align-items: center; justify-content: center; flex: none;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8672AD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4 L20 8 L12 12 L4 8 Z"/><path d="M4 12 L12 16 L20 12"/><path d="M4 16 L12 20 L20 16"/>
+          </svg>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; color: #2B2233;">Lasanha à bolonhesa</span>
+          <div style="display: flex; align-items: center; gap: 12px; color: #6B6178; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20 a6.5 6.5 0 0 1 13 0"/></svg>
+              8 porções
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+              12 itens
+            </span>
+          </div>
+        </div>
+        <button style="width: 40px; height: 40px; border-radius: 999px; border: none; background: #E7E0F2; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h13 l-1.4 7 h-9 Z"/><circle cx="8" cy="19" r="1.3"/><circle cx="15" cy="19" r="1.3"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== Barra de navegação inferior (3 abas, Receitas ativa) ===== -->
+  <div style="display: flex; justify-content: space-around; align-items: flex-start; background: #FFFFFF; border-top: 1px solid #ECE6F2; padding: 8px 0 14px;">
+    <!-- Lista (inativa) -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B6178" stroke-width="1.9" stroke-linecap="round"><line x1="8" y1="7" x2="20" y2="7"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1.1" fill="#6B6178" stroke="none"/><circle cx="4" cy="12" r="1.1" fill="#6B6178" stroke="none"/><circle cx="4" cy="17" r="1.1" fill="#6B6178" stroke="none"/></svg>
+      </div>
+      <span style="font-size: 12px; color: #6B6178;">Lista</span>
+    </div>
+    <!-- Receitas (ATIVA: pílula roxa clara atrás do ícone) -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="background: #E7E0F2; border-radius: 16px; padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4 h11 a2 2 0 0 1 2 2 v14 H7 a2 2 0 0 1 -2 -2 Z"/><path d="M18 18 H7 a2 2 0 0 0 -2 2"/><line x1="9" y1="8" x2="14" y2="8"/></svg>
+      </div>
+      <span style="font-size: 12px; font-weight: 700; color: #6E5A94;">Receitas</span>
+    </div>
+    <!-- Perfil (inativa) -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B6178" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
+      </div>
+      <span style="font-size: 12px; color: #6B6178;">Perfil</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

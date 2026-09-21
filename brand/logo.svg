@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>Logo carrinho feliz</title>
+  <desc>Ícone vetorial de carrinho de supermercado formando uma carinha feliz.</desc>
+
+  <g fill="#675082">
+    <!-- Alça + corpo do carrinho, em uma forma única -->
+    <path d="
+      M252 255
+      C252 222 276 198 309 198
+      C368 198 425 238 443 300
+      L457 349
+      C464 372 480 386 505 389
+      L875 389
+      C902 389 921 412 916 438
+      L877 620
+      C872 648 850 665 821 665
+      L470 665
+      C442 665 418 646 412 620
+      L369 429
+      L351 348
+      C344 316 326 296 296 288
+      L277 283
+      C262 279 252 268 252 255
+      Z" />
+
+    <!-- Sorriso / parte inferior da carinha -->
+    <path d="
+      M414 668
+      C386 689 369 723 369 760
+      C369 853 483 929 641 929
+      C790 929 900 865 941 768
+      C949 749 939 728 919 720
+      C900 712 879 721 871 741
+      C839 816 750 858 641 858
+      C526 858 440 811 440 758
+      C440 737 450 719 467 705
+      C484 691 486 667 471 651
+      C456 635 431 638 414 668
+      Z" />
+  </g>
+
+  <!-- Olhos/rodinhas totalmente preenchidos -->
+  <circle cx="531" cy="770" r="52" fill="#675082"/>
+  <circle cx="748" cy="770" r="52" fill="#675082"/>
+</svg>

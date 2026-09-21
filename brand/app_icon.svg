@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8672AD"/>
+      <stop offset="1" stop-color="#574471"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F5F1FA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fundo do ícone (degrade roxo do app) -->
+  <rect x="32" y="32" width="960" height="960" rx="220" fill="url(#bg)"/>
+
+  <!-- Brilhos decorativos -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round">
+    <path d="M816 244l42-55"/>
+    <path d="M850 318l65-12"/>
+  </g>
+
+  <!-- Folha da lista, levemente inclinada -->
+  <g transform="rotate(-8 512 520)">
+    <path d="M268 206 Q268 170 304 170 H702 Q738 170 738 206 V790 Q738 826 702 826 H304 Q268 826 268 790 Z" fill="url(#paper)"/>
+    <path d="M628 826h74q36 0 36-36v-74z" fill="#E7E0F2"/>
+
+    <!-- Carinha feliz -->
+    <g fill="none" stroke="#574471" stroke-width="25" stroke-linecap="round">
+      <path d="M438 330q0-28 28-28t28 28"/>
+      <path d="M562 330q0-28 28-28t28 28"/>
+      <path d="M472 368q40 48 80 0"/>
+    </g>
+
+    <!-- Caixinhas marcadas -->
+    <g fill="#6E5A94">
+      <rect x="330" y="430" width="72" height="72" rx="18"/>
+      <rect x="330" y="554" width="72" height="72" rx="18"/>
+      <rect x="330" y="678" width="72" height="72" rx="18"/>
+    </g>
+    <g fill="none" stroke="#FFFFFF" stroke-width="17" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M348 465l17 17 34-39"/>
+      <path d="M348 589l17 17 34-39"/>
+      <path d="M348 713l17 17 34-39"/>
+    </g>
+
+    <!-- Linhas da lista -->
+    <g fill="#D8D0E4">
+      <rect x="438" y="454" width="202" height="24" rx="12"/>
+      <rect x="438" y="578" width="202" height="24" rx="12"/>
+      <rect x="438" y="702" width="202" height="24" rx="12"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<!--
+  ic_sparkle.xml  ===  ícone de "gerar com IA" (uma estrelinha de 4 pontas).
+  Linha minimalista, sem emoji. Usado no botão Premium.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#00000000"
+        android:strokeColor="#6E5A94"
+        android:strokeWidth="1.6"
+        android:strokeLineJoin="round"
+        android:pathData="M12,3 L13.6,9.2 L20,12 L13.6,14.8 L12,21 L10.4,14.8 L4,12 L10.4,9.2 Z" />
+</vector>

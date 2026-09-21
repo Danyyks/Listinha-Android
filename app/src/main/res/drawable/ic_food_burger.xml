@@ -1,0 +1,15 @@
+<!-- ic_food_burger.xml  ===  salgado/lanche (hambúrguer). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#00000000" android:strokeColor="#8672AD" android:strokeWidth="1.7"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M5,11 C5,7 8,5 12,5 C16,5 19,7 19,11 Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#8672AD" android:strokeWidth="1.7"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M4.5,14 q3,1.6 7.5,0 q4.5,-1.6 7.5,0" />
+    <path android:fillColor="#00000000" android:strokeColor="#8672AD" android:strokeWidth="1.7"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M5,16.5 h14 a1.5,1.5 0 0 1 -1.5,2 h-11 a1.5,1.5 0 0 1 -1.5,-2 Z" />
+    <path android:fillColor="#8672AD" android:pathData="M9,8.3 a0.6,0.6 0 1 0 0.01,0 z" />
+    <path android:fillColor="#8672AD" android:pathData="M13,7.8 a0.6,0.6 0 1 0 0.01,0 z" />
+</vector>

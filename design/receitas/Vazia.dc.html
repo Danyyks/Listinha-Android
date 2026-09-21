@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #6E5A94; } a:hover { color: #574471; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<!-- ===== Moldura do celular (390x844) — estado VAZIO (primeiro acesso) ===== -->
+<div style="width: 390px; height: 844px; background: #EDE7F5; display: flex; flex-direction: column; font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; overflow: hidden;">
+
+  <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+
+    <!-- Top bar igual ao estado cheio -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 20px 16px 4px;">
+      <svg viewBox="0 0 1024 1024" width="30" height="30" style="color: #6E5A94; flex: none;">
+        <g transform="translate(-84,-51)" fill="currentColor">
+          <path d="M252,255 C252,222 276,198 309,198 C368,198 425,238 443,300 L457,349 C464,372 480,386 505,389 L875,389 C902,389 921,412 916,438 L877,620 C872,648 850,665 821,665 L470,665 C442,665 418,646 412,620 L369,429 L351,348 C344,316 326,296 296,288 L277,283 C262,279 252,268 252,255 Z"/>
+          <path d="M414,668 C386,689 369,723 369,760 C369,853 483,929 641,929 C790,929 900,865 941,768 C949,749 939,728 919,720 C900,712 879,721 871,741 C839,816 750,858 641,858 C526,858 440,811 440,758 C440,737 450,719 467,705 C484,691 486,667 471,651 C456,635 431,638 414,668 Z"/>
+          <path d="M479,770 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0 z"/>
+          <path d="M696,770 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0 z"/>
+        </g>
+      </svg>
+      <span style="font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif; font-size: 24px; font-weight: 700; color: #6E5A94;">Receitas</span>
+    </div>
+    <div style="padding: 0 16px 12px; color: #6B6178; font-size: 13px;">Suas receitas favoritas, prontas pra virar lista</div>
+
+    <!-- Miolo vazio, centralizado -->
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 40px; gap: 6px;">
+      <!-- Ilustração: livro de receitas dentro de um círculo suave -->
+      <div style="width: 108px; height: 108px; border-radius: 999px; background: #E7E0F2; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#8672AD" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 4 h11 a2 2 0 0 1 2 2 v14 H7 a2 2 0 0 1 -2 -2 Z"/><path d="M18 18 H7 a2 2 0 0 0 -2 2"/><line x1="9" y1="8" x2="14" y2="8"/><line x1="9" y1="11.5" x2="12.5" y2="11.5"/>
+        </svg>
+      </div>
+      <span style="font-family: 'Fredoka', sans-serif; font-size: 21px; font-weight: 600; color: #2B2233;">Nenhuma receita ainda</span>
+      <span style="font-size: 14px; color: #6B6178; line-height: 1.5;">Crie sua primeira receita e mande os ingredientes pra lista num toque.</span>
+    </div>
+
+    <!-- Ações no rodapé do miolo -->
+    <div style="padding: 0 16px 24px; display: flex; flex-direction: column; gap: 10px;">
+      <button style="height: 50px; border: none; border-radius: 15px; background: #6E5A94; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Criar primeira receita
+      </button>
+      <button style="height: 50px; border: 1px solid #D8D0E4; border-radius: 15px; background: #FFFFFF; color: #6E5A94; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="1.8" stroke-linejoin="round" style="flex: none;"><path d="M12 3 L13.6 9.2 L20 12 L13.6 14.8 L12 21 L10.4 14.8 L4 12 L10.4 9.2 Z"/></svg>
+        <span style="flex: 1; text-align: left;">Gerar receita com IA</span>
+        <span style="background: #6E5A94; color: #FFFFFF; font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px;">PRO</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de navegação inferior (Receitas ativa) -->
+  <div style="display: flex; justify-content: space-around; align-items: flex-start; background: #FFFFFF; border-top: 1px solid #ECE6F2; padding: 8px 0 14px;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B6178" stroke-width="1.9" stroke-linecap="round"><line x1="8" y1="7" x2="20" y2="7"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1.1" fill="#6B6178" stroke="none"/><circle cx="4" cy="12" r="1.1" fill="#6B6178" stroke="none"/><circle cx="4" cy="17" r="1.1" fill="#6B6178" stroke="none"/></svg>
+      </div>
+      <span style="font-size: 12px; color: #6B6178;">Lista</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="background: #E7E0F2; border-radius: 16px; padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6E5A94" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4 h11 a2 2 0 0 1 2 2 v14 H7 a2 2 0 0 1 -2 -2 Z"/><path d="M18 18 H7 a2 2 0 0 0 -2 2"/><line x1="9" y1="8" x2="14" y2="8"/></svg>
+      </div>
+      <span style="font-size: 12px; font-weight: 700; color: #6E5A94;">Receitas</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 96px;">
+      <div style="padding: 4px 18px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B6178" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
+      </div>
+      <span style="font-size: 12px; color: #6B6178;">Perfil</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

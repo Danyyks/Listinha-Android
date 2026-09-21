@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  colors.xml  —  cores usadas fora do Compose (ex: fundo da janela
+  enquanto o app ainda está abrindo). As cores das telas em si
+  ficam no Color.kt.
+-->
+<resources>
+    <color name="purple_brand">#6E5A94</color>
+    <color name="window_bg">#EDE7F5</color>
+</resources>

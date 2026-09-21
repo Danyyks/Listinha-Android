@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  strings.xml  —  todos os TEXTOS visíveis do app ficam aqui.
+  Vantagem: centraliza os textos (fácil revisar) e permite
+  traduzir o app para outros idiomas no futuro sem mexer no código.
+-->
+<resources>
+    <string name="app_name">Listinha</string>
+    <string name="app_tagline">Sua lista de compras</string>
+</resources>

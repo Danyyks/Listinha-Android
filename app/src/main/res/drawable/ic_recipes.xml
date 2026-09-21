@@ -1,0 +1,28 @@
+<!--
+  ic_recipes.xml  ===  ícone da aba "Receitas" (um livro de receitas).
+  Traço (stroke) em linha, no mesmo estilo minimalista dos outros.
+  A cor final é definida pelo tint do Compose (fica roxa/cinza sozinha).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#00000000"
+        android:strokeColor="#6E5A94"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M5,4 h11 a2,2 0 0 1 2,2 v14 H7 a2,2 0 0 1 -2,-2 Z" />
+    <path android:fillColor="#00000000"
+        android:strokeColor="#6E5A94"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M18,18 H7 a2,2 0 0 0 -2,2" />
+    <path android:fillColor="#00000000"
+        android:strokeColor="#6E5A94"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M9,8 h5" />
+</vector>

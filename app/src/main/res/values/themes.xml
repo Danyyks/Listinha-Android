@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  themes.xml  —  o tema BÁSICO da janela do Android.
+  ============================================================
+  Este tema é usado por uma fração de segundo, no instante em que
+  o app abre, ANTES do Compose assumir o desenho da tela. Ele só
+  define a cor de fundo da janela e deixa as barras transparentes
+  (para o visual "de ponta a ponta"). O visual de verdade vem do
+  Compose (Theme.kt). Faremos uma tela de abertura (splash) bonita
+  na Fase 6.
+-->
+<resources>
+    <style name="Theme.Listinha" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!--
+      Tema da TELA DE ABERTURA (splash). Aparece por 1 instante ao abrir o app:
+      fundo roxo com o carrinho no centro. Depois o app troca para Theme.Listinha
+      (definido em postSplashScreenTheme). Vem da biblioteca core-splashscreen.
+    -->
+    <style name="Theme.Listinha.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_brand</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Listinha</item>
+    </style>
+</resources>

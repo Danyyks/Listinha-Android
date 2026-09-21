@@ -1,0 +1,9 @@
+<!--
+  ic_launcher.xml (v26+)  —  o ícone ADAPTATIVO.
+  O Android junta o fundo + a frente e aplica a máscara do celular
+  (círculo, quadrado arredondado, etc.). Vale para Android 8.0+.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

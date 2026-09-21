@@ -1,0 +1,41 @@
+// ============================================================
+//  firestore.rules  —  as REGRAS DE SEGURANÇA do banco
+// ------------------------------------------------------------
+//  ESTA É A PARTE MAIS IMPORTANTE DA MIGRAÇÃO.
+//
+//  Como o app fala direto com o Firestore, são ESTAS regras que
+//  impedem um usuário de ler ou mexer nos dados de outro.
+//
+//  Regra de ouro: cada pessoa só acessa a própria "gaveta"
+//  users/{seu-uid}/... — e absolutamente nada além disso.
+//
+//  A validação de preço/quantidade/nome é feita no próprio app
+//  (no formulário e no repositório), então aqui focamos só em
+//  "é o dono?". Simples e à prova de falhas.
+// ============================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Verdadeiro só se houver login E o uid do dono bater com o de quem pede.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // A "gaveta" de cada usuário e TUDO dentro dela.
+    match /users/{userId} {
+      // O documento do perfil (orçamento, tema).
+      allow read, write: if isOwner(userId);
+
+      // O {document=**} pega qualquer subcoleção/documento abaixo
+      // (items, priceHistory e o que vier no futuro), sempre só para o dono.
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Qualquer outro caminho fica NEGADO por padrão.
+  }
+}

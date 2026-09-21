@@ -1,0 +1,61 @@
+<!--
+  ic_launcher_foreground.xml  ===  a FRENTE do ícone (a "lista feliz").
+  Uma folhinha de lista com carinha sorridente, itens marcados e linhas.
+  Os <group> encolhem (scale 0.68) e inclinam (rotation -8) o desenho
+  dentro da "zona segura" do ícone adaptativo.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <group android:pivotX="512" android:pivotY="512" android:scaleX="0.68" android:scaleY="0.68">
+
+        <!-- Risquinhos decorativos (brilho) no canto -->
+        <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="28"
+            android:strokeLineCap="round" android:pathData="M816,244 l42,-55" />
+        <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="28"
+            android:strokeLineCap="round" android:pathData="M850,318 l65,-12" />
+
+        <!-- A folha, levemente inclinada -->
+        <group android:pivotX="512" android:pivotY="520" android:rotation="-8">
+
+            <!-- Papel -->
+            <path android:fillColor="#FFFFFF"
+                android:pathData="M268,206 Q268,170 304,170 H702 Q738,170 738,206 V790 Q738,826 702,826 H304 Q268,826 268,790 Z" />
+            <!-- Cantinho dobrado -->
+            <path android:fillColor="#E7E0F2"
+                android:pathData="M628,826 h74 q36,0 36,-36 v-74 z" />
+
+            <!-- Carinha feliz -->
+            <path android:fillColor="#00000000" android:strokeColor="#574471" android:strokeWidth="25"
+                android:strokeLineCap="round" android:pathData="M438,330 q0,-28 28,-28 t28,28" />
+            <path android:fillColor="#00000000" android:strokeColor="#574471" android:strokeWidth="25"
+                android:strokeLineCap="round" android:pathData="M562,330 q0,-28 28,-28 t28,28" />
+            <path android:fillColor="#00000000" android:strokeColor="#574471" android:strokeWidth="25"
+                android:strokeLineCap="round" android:pathData="M472,368 q40,48 80,0" />
+
+            <!-- Caixinhas de marcar -->
+            <path android:fillColor="#6E5A94"
+                android:pathData="M348,430 h36 a18,18 0 0 1 18,18 v36 a18,18 0 0 1 -18,18 h-36 a18,18 0 0 1 -18,-18 v-36 a18,18 0 0 1 18,-18 z" />
+            <path android:fillColor="#6E5A94"
+                android:pathData="M348,554 h36 a18,18 0 0 1 18,18 v36 a18,18 0 0 1 -18,18 h-36 a18,18 0 0 1 -18,-18 v-36 a18,18 0 0 1 18,-18 z" />
+            <path android:fillColor="#6E5A94"
+                android:pathData="M348,678 h36 a18,18 0 0 1 18,18 v36 a18,18 0 0 1 -18,18 h-36 a18,18 0 0 1 -18,-18 v-36 a18,18 0 0 1 18,-18 z" />
+
+            <!-- Os "checks" (brancos) -->
+            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="17"
+                android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M348,465 l17,17 34,-39" />
+            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="17"
+                android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M348,589 l17,17 34,-39" />
+            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="17"
+                android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M348,713 l17,17 34,-39" />
+
+            <!-- Linhas da lista -->
+            <path android:fillColor="#D8D0E4" android:pathData="M450,454 h178 a12,12 0 0 1 0,24 h-178 a12,12 0 0 1 0,-24 z" />
+            <path android:fillColor="#D8D0E4" android:pathData="M450,578 h178 a12,12 0 0 1 0,24 h-178 a12,12 0 0 1 0,-24 z" />
+            <path android:fillColor="#D8D0E4" android:pathData="M450,702 h178 a12,12 0 0 1 0,24 h-178 a12,12 0 0 1 0,-24 z" />
+
+        </group>
+    </group>
+</vector>
