@@ -7,7 +7,7 @@
 <pt-BR>
 Novidades na aba Receitas:
 • Visual novo: grade com fotos grandes e capa automática para receitas sem foto
-• Salvar ficou fácil: cole uma receita inteira ou compartilhe de outro app (Instagram, navegador, WhatsApp) e o Listinha organiza tudo
+• Salvar ficou fácil: cole uma receita inteira ou compartilhe de outro app (Instagram, navegador, WhatsApp) e a Listinha organiza tudo
 • Porções ajustáveis: as quantidades se recalculam sozinhas
 • Marque o que já tem em casa e só o que falta vai pra lista
 • Modo cozinhar: passo a passo, timer em um toque e tela sempre acesa

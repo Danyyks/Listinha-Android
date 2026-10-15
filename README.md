@@ -21,7 +21,7 @@ App Android nativo de lista de compras e receitas — organização automática 
 ![Material 3](https://img.shields.io/badge/Material_3-6E5A94?style=flat-square&logo=materialdesign&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white)
-![Versão](https://img.shields.io/badge/versão-1.0-6E5A94?style=flat-square)
+![Versão](https://img.shields.io/badge/versão-1.1-6E5A94?style=flat-square)
 
 </div>
 
@@ -33,6 +33,8 @@ O **Listinha** é um app Android publicado na **Google Play Store**, feito para 
 
 O diferencial está em unir **receitas e lista de compras** no mesmo lugar. Você guarda suas receitas favoritas com foto, ingredientes e modo de preparo — e, quando bate a vontade de cozinhar, um toque em **"Adicionar à lista"** joga todos os ingredientes na sua lista de compras, já organizados por categoria e prontos para o supermercado.
 
+Salvar receita também é fácil: cole o texto de um blog ou compartilhe direto do Instagram, do navegador ou do WhatsApp, e o Listinha separa ingredientes, quantidades, categorias e passos sozinho. Na hora de cozinhar, o modo passo a passo tem timer e mantém a tela acesa.
+
 Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
 <br />
@@ -43,14 +45,16 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
 <table>
   <tr>
-    <td align="center"><img src="store/screenshots/02_receitas.png" width="220" /><br /><sub><b>Suas receitas</b></sub></td>
-    <td align="center"><img src="store/screenshots/03_detalhe_brownie.png" width="220" /><br /><sub><b>Detalhe da receita</b></sub></td>
-    <td align="center"><img src="store/screenshots/04_orcamento.png" width="220" /><br /><sub><b>Lista + orçamento</b></sub></td>
+    <td align="center"><img src="store/screenshots/02_receitas.png" width="190" /><br /><sub><b>Suas receitas</b></sub></td>
+    <td align="center"><img src="store/screenshots/03_detalhe.png" width="190" /><br /><sub><b>Só o que falta vai pra lista</b></sub></td>
+    <td align="center"><img src="store/screenshots/04_colar_receita.png" width="190" /><br /><sub><b>Cole e o app organiza</b></sub></td>
+    <td align="center"><img src="store/screenshots/05_modo_cozinhar.png" width="190" /><br /><sub><b>Modo cozinhar</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="store/screenshots/01_login.png" width="220" /><br /><sub><b>Login com Google</b></sub></td>
-    <td align="center"><img src="store/screenshots/05_perfil.png" width="220" /><br /><sub><b>Perfil</b></sub></td>
-    <td align="center"><img src="store/screenshots/06_modo_escuro.png" width="220" /><br /><sub><b>Modo escuro</b></sub></td>
+    <td align="center"><img src="store/screenshots/08_modo_escuro.png" width="190" /><br /><sub><b>Modo escuro</b></sub></td>
+    <td align="center"><img src="store/screenshots/06_orcamento.png" width="190" /><br /><sub><b>Lista + orçamento</b></sub></td>
+    <td align="center"><img src="store/screenshots/01_login.png" width="190" /><br /><sub><b>Login com Google</b></sub></td>
+    <td align="center"><img src="store/screenshots/07_perfil.png" width="190" /><br /><sub><b>Perfil</b></sub></td>
   </tr>
 </table>
 

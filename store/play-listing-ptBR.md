@@ -34,8 +34,17 @@ Listinha é o seu app de lista de compras e receitas em um só lugar. Guarde tud
 SUAS RECEITAS VIRAM LISTA DE COMPRAS
 Este é o nosso diferencial: reúna todas as suas receitas favoritas na Listinha e, quando quiser preparar alguma, toque em "Adicionar à lista". Em segundos, todos os ingredientes entram na sua lista de compras — já organizados por categoria, prontos para o mercado. Chega de anotar item por item.
 
-UM ESPAÇO SÓ SEU PARA RECEITAS
-Reúna todas as suas receitas com foto, ingredientes e modo de preparo. Tudo salvo na sua conta e sempre à mão — do café da manhã ao jantar especial. É o seu caderno de receitas digital, que ainda faz as compras por você.
+SALVAR RECEITA FICOU FÁCIL
+Copiou uma receita de um blog, do Instagram ou do WhatsApp? Cole na Listinha — ou toque em Compartilhar no outro app — e ela separa sozinha o nome, os ingredientes com as quantidades, as categorias e o modo de preparo. Prefere escrever? É um ingrediente por linha, sem formulário chato.
+
+SUAS RECEITAS, LINDAS COMO UM ÁLBUM
+Todas as receitas numa grade com fotos grandes, do café da manhã ao jantar especial. Sem foto? O app cria uma capa caprichada automaticamente. Tudo salvo na sua conta e sempre à mão.
+
+AJUSTE AS PORÇÕES E COMPRE SÓ O QUE FALTA
+Vai cozinhar para mais gente? Mude as porções e as quantidades se recalculam. Marque o que você já tem em casa e só o que falta vai para a lista.
+
+MODO COZINHAR
+Passo a passo em letras grandes, timer em um toque quando a receita fala de tempo ("asse por 40 minutos") e tela sempre acesa — feito para usar com a mão na massa.
 
 TAMBÉM É A MELHOR LISTA DE COMPRAS
 • Lista rápida: adicione itens em segundos.
@@ -57,7 +66,8 @@ Baixe agora: guarde suas receitas, deixe o app montar a lista sozinho e economiz
 
 Principais: lista de compras, lista de mercado, lista de supermercado, lista de feira,
 organizar compras, planejar compras, controle de gastos, orçamento de compras,
-lista do mercado, compras do mês, receitas, ingredientes.
+lista do mercado, compras do mês, receitas, ingredientes,
+caderno de receitas, salvar receitas, modo cozinhar.
 
 > Observação: a Play Store NÃO tem campo separado de palavras-chave (diferente do
 > iPhone). O que ranqueia é o **título + descrições** acima. Por isso os termos já
