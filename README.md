@@ -61,7 +61,10 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 ## Funcionalidades
 
 - 🧾 **Receitas viram lista** — um toque transforma os ingredientes de uma receita em itens da lista de compras.
-- 📖 **Caderno de receitas** — foto, ingredientes e modo de preparo, tudo salvo na sua conta.
+- 📖 **Caderno de receitas** — grade estilo Pinterest com fotos grandes; receita sem foto ganha capa automática.
+- 📋 **Salvar sem esforço** — cole uma receita inteira (blog, WhatsApp, Instagram) ou compartilhe de outro app: o Listinha separa nome, ingredientes, quantidades, categorias, passos, porções e tempo sozinho.
+- 🍳 **Modo cozinhar** — um passo por tela, letra grande, timer em um toque e tela sempre acesa.
+- ⚖️ **Porções ajustáveis** — mude as porções e as quantidades se recalculam; marque o que já tem em casa e só o que falta vai pra lista.
 - 🗂️ **Organização automática** — itens agrupados por categoria (frutas, carnes, mercearia, limpeza e mais).
 - 💰 **Controle de gastos** — defina um orçamento e acompanhe o total da compra em tempo real.
 - 🛒 **Modo compra** — marque os itens enquanto anda pelo supermercado.
@@ -81,7 +84,8 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 | **Banco de dados** | Cloud Firestore (nuvem, por usuário) |
 | **Assíncrono** | Kotlin Coroutines |
 | **Imagens** | Coil |
-| **Outros** | Splash Screen API · fontes variáveis (Fredoka + Nunito) |
+| **Testes** | JUnit (regras de texto, porções e timer) |
+| **Outros** | Splash Screen API · fontes Fredoka + Nunito |
 
 <br />
 
@@ -97,9 +101,9 @@ app/src/main/java/com/listinha/app/
 ├── recipes/         # RecipeViewModel — receitas
 ├── ui/
 │   ├── components/   # Componentes reutilizáveis (linhas, formulários, resumos)
-│   ├── screens/      # Telas (Login, Home, Lista, Receitas, Detalhe, Perfil)
+│   ├── screens/      # Telas (Login, Home, Lista, Receitas, Detalhe, Modo cozinhar, Perfil)
 │   └── theme/        # Cores, tipografia e tema (claro/escuro)
-└── util/            # Formatação de moeda, utilitários de imagem
+└── util/            # Moeda, imagem, leitura de receita colada (RecipeText) e contas de cozinha (Cooking)
 ```
 
 ### Segurança dos dados
@@ -138,6 +142,16 @@ git clone https://github.com/Danyyks/Listinha-Android.git
 4. Baixe o `google-services.json` e coloque em `app/`.
 5. Publique as regras do arquivo `firestore.rules`.
 6. Rode o app (`Shift + F10`).
+
+### Testes
+
+As regras que leem receita colada, escalam porções e detectam o timer têm testes que rodam no computador, sem emulador. No Android Studio: clique com o botão direito em `app/src/test` → **Run 'Tests in test'**. Pela linha de comando:
+
+```bash
+gradle testDebugUnitTest
+```
+
+> **Atenção:** o Android usa outro motor de expressões regulares (ICU) que o Java do computador. Uma regra pode passar no teste e quebrar no celular — por isso, depois de mexer em `util/RecipeText.kt` ou `util/Cooking.kt`, abra também a aba Receitas no emulador.
 
 <br />
 

@@ -33,8 +33,8 @@ android {
         // targetSdk = versão para a qual o app foi testado/otimizado (a Play exige uma recente).
         targetSdk = 36
 
-        versionCode = 1        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
-        versionName = "1.0"    // versão que o usuário vê ("1.0", "1.1"...)
+        versionCode = 2        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
+        versionName = "1.1"    // versão que o usuário vê ("1.0", "1.1"...)
     }
 
     buildTypes {
@@ -100,6 +100,9 @@ dependencies {
 
     // --- Tela de abertura (splash) ---
     implementation(libs.androidx.core.splashscreen)
+
+    // --- Testes automáticos (rodam no computador: gradle testDebugUnitTest) ---
+    testImplementation(libs.junit)
 
     // Só na build de debug: ferramentas de inspeção do Compose.
     debugImplementation(libs.androidx.ui.tooling)

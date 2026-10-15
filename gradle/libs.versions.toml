@@ -25,6 +25,7 @@ credentials = "1.3.0"             # Credential Manager: jeito moderno de login n
 googleid = "1.1.1"                # opção "Entrar com Google" para o Credential Manager
 coil = "2.7.0"                    # carrega imagens da internet (a foto do perfil)
 coreSplashscreen = "1.0.1"        # tela de abertura (splash) padrão do Android
+junit = "4.13.2"                  # testes automáticos (rodam no computador, sem emulador)
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,9 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 
 # Tela de abertura (splash) oficial do Android.
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+
+# JUnit: testes das regras puras (ler receita colada, escalar porções, timer).
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

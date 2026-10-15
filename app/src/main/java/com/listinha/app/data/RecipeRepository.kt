@@ -59,10 +59,12 @@ class RecipeRepository {
             hashMapOf(
                 "name" to recipe.name.trim(),
                 "servings" to recipe.servings,
+                "minutes" to recipe.minutes,
                 "iconIndex" to recipe.iconIndex,
                 "photo" to recipe.photo,
                 "ingredients" to recipe.ingredients.map { it.toMap() },
                 "steps" to recipe.steps,
+                "sourceUrl" to recipe.sourceUrl,
                 "createdAt" to FieldValue.serverTimestamp(),
             )
         ).await()
@@ -74,10 +76,12 @@ class RecipeRepository {
             mapOf(
                 "name" to recipe.name.trim(),
                 "servings" to recipe.servings,
+                "minutes" to recipe.minutes,
                 "iconIndex" to recipe.iconIndex,
                 "photo" to recipe.photo,
                 "ingredients" to recipe.ingredients.map { it.toMap() },
                 "steps" to recipe.steps,
+                "sourceUrl" to recipe.sourceUrl,
             )
         ).await()
     }

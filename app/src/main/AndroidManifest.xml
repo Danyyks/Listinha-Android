@@ -34,6 +34,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--
+              "Compartilhar -> Salvar receita": aparece no menu de compartilhar
+              dos outros apps (Instagram, navegador, WhatsApp) quando o
+              conteúdo é TEXTO. O app abre a receita já preenchida.
+            -->
+            <intent-filter android:label="@string/share_target_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
     </application>
 

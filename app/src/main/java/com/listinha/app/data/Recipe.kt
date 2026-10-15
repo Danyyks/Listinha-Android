@@ -5,8 +5,9 @@ import com.google.firebase.firestore.DocumentSnapshot
 // ============================================================
 //  Recipe.kt  ===  o modelo de uma RECEITA
 // ------------------------------------------------------------
-//  Guarda nome, porções, um ícone (índice 0..3), os ingredientes
-//  e o modo de preparo. Cada ingrediente sabe a sua CATEGORIA
+//  Guarda nome, porções, tempo, um ícone (índice da lista de
+//  miniaturas), os ingredientes, o modo de preparo e o link de
+//  onde a receita veio (se tiver). Cada ingrediente sabe a sua CATEGORIA
 //  (as mesmas chaves de Category.kt) — é isso que vai permitir
 //  jogar tudo na lista de compras já agrupado.
 //
@@ -33,10 +34,12 @@ data class Recipe(
     val id: String = "",               // ID do documento no Firestore
     val name: String = "",
     val servings: Int = 1,             // porções que rende
+    val minutes: Int = 0,              // tempo de preparo em minutos (0 = não informado)
     val iconIndex: Int = 0,            // qual miniatura (usada quando não há foto)
     val photo: String = "",            // foto compactada (base64) ou "" se não tiver
     val ingredients: List<RecipeIngredient> = emptyList(),
     val steps: List<String> = emptyList(), // passos do modo de preparo
+    val sourceUrl: String = "",        // link de origem (blog, Instagram...) ou ""
     val createdAt: Long = 0L,          // quando foi criada (ms desde 1970)
 ) {
     // Quantos itens (ingredientes) a receita tem — usado no card.
@@ -62,11 +65,13 @@ data class Recipe(
             return Recipe(
                 id = doc.id,
                 name = doc.getString("name") ?: "",
-                servings = (doc.getLong("servings") ?: 1L).toInt(),
+                servings = (doc.getLong("servings") ?: 1L).toInt().coerceAtLeast(1),
+                minutes = (doc.getLong("minutes") ?: 0L).toInt(),
                 iconIndex = (doc.getLong("iconIndex") ?: 0L).toInt(),
                 photo = doc.getString("photo") ?: "",
                 ingredients = ingredients,
                 steps = steps,
+                sourceUrl = doc.getString("sourceUrl") ?: "",
                 createdAt = doc.getTimestamp("createdAt")?.toDate()?.time ?: 0L,
             )
         }

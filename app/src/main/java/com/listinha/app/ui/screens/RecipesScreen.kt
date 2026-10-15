@@ -3,66 +3,82 @@
 package com.listinha.app.ui.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.listinha.app.R
 import com.listinha.app.data.Recipe
 import com.listinha.app.recipes.RecipeViewModel
-import com.listinha.app.util.decodeBase64ToImageBitmap
+import com.listinha.app.ui.components.RecipeImage
 import com.listinha.app.ui.theme.FredokaFamily
+import com.listinha.app.util.formatDuration
+import com.listinha.app.util.normalize
+import com.listinha.app.util.parseRecipeText
 
 // ============================================================
 //  RecipesScreen.kt  ===  a aba "Receitas"
 // ------------------------------------------------------------
-//  RecipesTab é o "cérebro": mostra a LISTA de receitas ou, se
-//  o usuário tocar numa, mostra o DETALHE. RecipesListScreen é
-//  a tela da lista em si (busca + botões + cards).
+//  RecipesTab é o "cérebro": decide se mostra a GRADE, o DETALHE
+//  de uma receita ou o FORMULÁRIO. RecipesGridScreen é a grade
+//  estilo Pinterest (fotos grandes, duas colunas).
 // ============================================================
 
-// Ícones disponíveis para as receitas (miniaturas).
+// Ícones disponíveis para as receitas (capa automática quando não há foto).
+// A ORDEM importa: o índice fica salvo na receita e o guessIconIndex
+// (util/RecipeText.kt) usa os mesmos números.
 internal val recipeIconResList = listOf(
     R.drawable.ic_food_pot,
     R.drawable.ic_food_pancake,
@@ -78,27 +94,36 @@ internal val recipeIconResList = listOf(
     R.drawable.ic_food_fish,
 )
 
-// Qual miniatura usar para uma receita (pelo índice guardado nela).
+// Qual ícone usar para uma receita (pelo índice guardado nela).
 internal fun iconForRecipe(recipe: Recipe): Int =
     recipeIconResList[recipe.iconIndex.coerceIn(0, recipeIconResList.lastIndex)]
 
 // As "telas" possíveis dentro da aba Receitas.
 private sealed interface RecipesRoute {
-    data object List : RecipesRoute
-    data class Detail(val recipe: Recipe) : RecipesRoute
-    data class Form(val recipe: Recipe?) : RecipesRoute // null = nova receita
+    data object Grid : RecipesRoute
+    // Guarda só o ID: o detalhe lê a receita atualizada do ViewModel
+    // (assim, depois de editar, o detalhe já mostra a versão nova).
+    data class Detail(val recipeId: String) : RecipesRoute
+    data class Form(
+        val editing: Recipe?,           // null = receita nova
+        val prefill: Recipe? = null,    // rascunho vindo de texto compartilhado
+        val openPaste: Boolean = false, // já abre a caixa "Colar receita"
+    ) : RecipesRoute
 }
 
 @Composable
 fun RecipesTab(
-    userId: String,                       // uid do usuário logado (identifica a conta)
+    userId: String,                          // uid do usuário logado (identifica a conta)
+    sharedText: String?,                     // texto compartilhado de outro app (ou null)
+    onSharedTextConsumed: () -> Unit,
+    onImmersiveChange: (Boolean) -> Unit,    // true = esconder a barra de abas (detalhe/formulário)
     onAddToList: (Recipe) -> Unit,
-    onCreateListFromRecipe: (Recipe) -> Unit,
+    onReplaceList: (Recipe) -> Unit,
 ) {
     // O ViewModel segura as receitas (vindas do Firestore) e as ações.
     val vm: RecipeViewModel = viewModel()
-    // Reinicia as receitas sempre que a conta logada muda (mesmo motivo da
-    // HomeScreen: o ViewModel sobrevive à troca de tela).
+    // Reinicia as receitas sempre que a conta logada muda (o ViewModel
+    // sobrevive à troca de tela, então sem isto vazaria dado entre contas).
     LaunchedEffect(userId) { vm.start() }
 
     // Se salvar/editar/excluir uma receita falhar, avisa com um Toast.
@@ -109,62 +134,105 @@ fun RecipesTab(
             vm.clearError()
         }
     }
-    // Em qual "tela" da aba estamos (lista, detalhe ou formulário).
-    var route by remember { mutableStateOf<RecipesRoute>(RecipesRoute.List) }
+
+    var route by remember { mutableStateOf<RecipesRoute>(RecipesRoute.Grid) }
+
+    // Texto compartilhado de outro app (Instagram, navegador, WhatsApp):
+    // vira um rascunho de receita já preenchido.
+    LaunchedEffect(sharedText) {
+        if (sharedText != null) {
+            route = RecipesRoute.Form(editing = null, prefill = parseRecipeText(sharedText))
+            onSharedTextConsumed()
+        }
+    }
+
+    // Fora da grade, a barra de abas some (mais foco). Ao sair da aba, volta.
+    LaunchedEffect(route) { onImmersiveChange(route !is RecipesRoute.Grid) }
+    DisposableEffect(Unit) { onDispose { onImmersiveChange(false) } }
+
+    // O botão "voltar" do celular volta para a tela anterior da aba
+    // (antes ele fechava o app direto).
+    BackHandler(enabled = route !is RecipesRoute.Grid) {
+        route = when (val r = route) {
+            is RecipesRoute.Form -> r.editing?.let { RecipesRoute.Detail(it.id) } ?: RecipesRoute.Grid
+            else -> RecipesRoute.Grid
+        }
+    }
 
     when (val r = route) {
-        RecipesRoute.List -> RecipesListScreen(
+        RecipesRoute.Grid -> RecipesGridScreen(
             recipes = vm.recipes,
-            onOpen = { route = RecipesRoute.Detail(it) },
-            onNew = { route = RecipesRoute.Form(null) },
-            onQuickAdd = { onAddToList(it) },
+            onOpen = { route = RecipesRoute.Detail(it.id) },
+            onNew = { route = RecipesRoute.Form(editing = null) },
+            onPaste = { route = RecipesRoute.Form(editing = null, openPaste = true) },
+            onQuickAdd = onAddToList,
         )
 
-        is RecipesRoute.Detail -> RecipeDetailScreen(
-            recipe = r.recipe,
-            onBack = { route = RecipesRoute.List },
-            onEdit = { route = RecipesRoute.Form(r.recipe) },
-            onDelete = {
-                vm.delete(r.recipe)
-                route = RecipesRoute.List
-            },
-            onAddToList = {
-                onAddToList(r.recipe)
-                route = RecipesRoute.List
-            },
-            onCreateList = {
-                onCreateListFromRecipe(r.recipe)
-                route = RecipesRoute.List
-            },
-        )
+        is RecipesRoute.Detail -> {
+            val recipe = vm.recipes.find { it.id == r.recipeId }
+            if (recipe == null) {
+                // Receita sumiu (excluída aqui ou em outro aparelho): volta pra grade.
+                LaunchedEffect(Unit) { route = RecipesRoute.Grid }
+            } else {
+                RecipeDetailScreen(
+                    recipe = recipe,
+                    onBack = { route = RecipesRoute.Grid },
+                    onEdit = { route = RecipesRoute.Form(editing = recipe) },
+                    onDelete = {
+                        vm.delete(recipe)
+                        route = RecipesRoute.Grid
+                    },
+                    onAddToList = onAddToList,
+                    onReplaceList = onReplaceList,
+                )
+            }
+        }
 
         is RecipesRoute.Form -> RecipeFormScreen(
-            initial = r.recipe,
+            initial = r.editing,
+            prefill = r.prefill,
+            openPaste = r.openPaste,
             onCancel = {
-                route = if (r.recipe != null) RecipesRoute.Detail(r.recipe) else RecipesRoute.List
+                route = r.editing?.let { RecipesRoute.Detail(it.id) } ?: RecipesRoute.Grid
             },
-            onSave = { novo ->
-                if (r.recipe == null) vm.add(novo) else vm.update(r.recipe.id, novo)
-                route = RecipesRoute.List
+            onSave = { nova ->
+                if (r.editing == null) {
+                    vm.add(nova)
+                    route = RecipesRoute.Grid
+                } else {
+                    vm.update(r.editing.id, nova)
+                    route = RecipesRoute.Detail(r.editing.id)
+                }
             },
         )
     }
 }
 
+// Alturas das fotos na grade, alternadas para o efeito "mosaico".
+private val cardHeights = listOf(214.dp, 166.dp, 190.dp, 174.dp)
+
 @Composable
-private fun RecipesListScreen(
+private fun RecipesGridScreen(
     recipes: List<Recipe>,
     onOpen: (Recipe) -> Unit,
     onNew: () -> Unit,
+    onPaste: () -> Unit,
     onQuickAdd: (Recipe) -> Unit,
 ) {
-    // Texto digitado na busca.
-    var query by remember { mutableStateOf("") }
-
-    // Receitas que batem com a busca (ignora maiúsculas/minúsculas).
-    val filtered = recipes.filter { it.name.contains(query.trim(), ignoreCase = true) }
+    // Texto digitado na busca (sobrevive a girar a tela).
+    var query by rememberSaveable { mutableStateOf("") }
+    // Busca ignorando maiúsculas E acentos ("feijao" acha "Feijão").
+    // As mais novas aparecem primeiro.
+    val filtered = remember(recipes, query) {
+        val q = normalize(query.trim())
+        val newestFirst = recipes.reversed()
+        if (q.isEmpty()) newestFirst else newestFirst.filter { normalize(it.name).contains(q) }
+    }
 
     Scaffold(
+        // A TopAppBar já cuida da barra de status; embaixo fica a barra de
+        // abas do app — então nenhum espaço extra aqui.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -172,214 +240,188 @@ private fun RecipesListScreen(
                 ),
                 title = {
                     Text(
-                        "Receitas",
+                        stringResource(R.string.recipes_title),
                         fontFamily = FredokaFamily,
-                        fontSize = 24.sp,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                     )
                 },
             )
         },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Text(
-                "Todas as suas receitas em um só lugar",
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 14.dp),
-            )
-
-            // Campo de busca.
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                placeholder = { Text("Buscar receita...") },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                leadingIcon = {
-                    Icon(
-                        painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(18.dp),
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Spacer(Modifier.height(14.dp))
-
-            // Botão primário: Nova receita (grátis) — abre o formulário.
-            Button(
-                onClick = onNew,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(15.dp),
-            ) {
-                Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Nova receita", fontWeight = FontWeight.SemiBold)
-            }
-
-            Spacer(Modifier.height(18.dp))
-
-            if (recipes.isEmpty()) {
-                // Lista totalmente vazia (primeiro acesso): estado convidativo.
-                EmptyRecipes()
-            } else {
-                // Cabeçalho da lista.
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
+        floatingActionButton = {
+            // Só aparece quando já há receitas (no vazio, os botões ficam no meio).
+            if (recipes.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = onNew,
+                    shape = RoundedCornerShape(20.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
-                    Text(
-                        "Minhas receitas",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                    Text(
-                        "${filtered.size} receitas",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Icon(
+                        painterResource(R.drawable.ic_add),
+                        contentDescription = stringResource(R.string.recipes_new),
                     )
                 }
+            }
+        },
+    ) { innerPadding ->
+        if (recipes.isEmpty()) {
+            EmptyRecipes(
+                onNew = onNew,
+                onPaste = onPaste,
+                modifier = Modifier.padding(innerPadding),
+            )
+            return@Scaffold
+        }
 
-                if (filtered.isEmpty()) {
-                    // Busca sem resultado.
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 96.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalItemSpacing = 18.dp,
+        ) {
+            // A busca só aparece quando ajuda (4+ receitas) — menos poluição.
+            if (recipes.size >= 4) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    SearchField(query = query, onQueryChange = { query = it })
+                }
+            }
+
+            if (filtered.isEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
-                        "Nenhuma receita encontrada.",
+                        stringResource(R.string.recipes_none_found),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth().padding(32.dp),
                     )
-                } else {
-                    // Um card para cada receita.
-                    filtered.forEach { recipe ->
-                        RecipeCard(
-                            recipe = recipe,
-                            onOpen = { onOpen(recipe) },
-                            onQuickAdd = { onQuickAdd(recipe) },
-                        )
-                        Spacer(Modifier.height(10.dp))
-                    }
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            itemsIndexed(filtered, key = { _, recipe -> recipe.id }) { index, recipe ->
+                RecipeCard(
+                    recipe = recipe,
+                    imageHeight = cardHeights[index % cardHeights.size],
+                    onOpen = { onOpen(recipe) },
+                    onQuickAdd = { onQuickAdd(recipe) },
+                )
+            }
         }
     }
 }
 
-// Um card de receita: miniatura + nome + info + botão de "mandar pra lista".
+// Campo de busca arredondado, sem borda.
+@Composable
+private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text(stringResource(R.string.recipes_search)) },
+        singleLine = true,
+        shape = RoundedCornerShape(16.dp),
+        leadingIcon = {
+            Icon(
+                painterResource(R.drawable.ic_search),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+    )
+}
+
+// Um card da grade: foto grande (ou capa) + nome + tempo/itens.
 @Composable
 private fun RecipeCard(
     recipe: Recipe,
+    imageHeight: Dp,
     onOpen: () -> Unit,
     onQuickAdd: () -> Unit,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onOpen() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(22.dp))
+            .clickable { onOpen() },
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(imageHeight)
+                .clip(RoundedCornerShape(22.dp)),
         ) {
-            // Miniatura: a foto da receita ou, se não tiver, o ícone.
-            val thumb = remember(recipe.photo) { decodeBase64ToImageBitmap(recipe.photo) }
+            RecipeImage(recipe = recipe, modifier = Modifier.fillMaxSize(), iconSize = 60.dp)
+
+            // Botão redondo: mandar os ingredientes pra lista num toque.
             Box(
                 modifier = Modifier
-                    .size(54.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (thumb != null) {
-                    Image(
-                        bitmap = thumb,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else {
-                    Icon(
-                        painterResource(iconForRecipe(recipe)),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(26.dp),
-                    )
-                }
-            }
-
-            Spacer(Modifier.width(12.dp))
-
-            // Nome + informações (porções, itens).
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    recipe.name,
-                    fontFamily = FredokaFamily,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(Modifier.height(3.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painterResource(R.drawable.ic_cart),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(13.dp),
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        "${recipe.itemCount} itens",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-
-            // Botão redondo: mandar os ingredientes pra lista.
-            Box(
-                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(10.dp)
                     .size(40.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.94f))
                     .clickable { onQuickAdd() },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     painterResource(R.drawable.ic_cart),
-                    contentDescription = "Adicionar à lista",
-                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = stringResource(R.string.recipes_add_to_list),
+                    tint = Color(0xFF6E5A94), // roxo da marca (o fundo é sempre branco)
                     modifier = Modifier.size(19.dp),
                 )
             }
         }
+
+        Spacer(Modifier.height(8.dp))
+        Text(
+            recipe.name,
+            fontFamily = FredokaFamily,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 19.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Text(
+            recipeMeta(recipe),
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 4.dp),
+        )
     }
 }
 
-// Estado vazio (primeiro acesso): convite para criar a primeira receita.
+// "40 min · 6 itens" (o tempo só aparece se foi informado).
 @Composable
-private fun EmptyRecipes() {
+private fun recipeMeta(recipe: Recipe): String {
+    val items = pluralStringResource(R.plurals.recipe_items, recipe.itemCount, recipe.itemCount)
+    return if (recipe.minutes > 0) "${formatDuration(recipe.minutes)} · $items" else items
+}
+
+// Estado vazio (primeiro acesso): convite para criar ou colar a primeira receita.
+@Composable
+private fun EmptyRecipes(onNew: () -> Unit, onPaste: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 40.dp, bottom = 24.dp),
+        modifier = modifier.fillMaxSize().padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Box(
             modifier = Modifier
-                .size(108.dp)
-                .clip(RoundedCornerShape(50))
+                .size(112.dp)
+                .clip(RoundedCornerShape(36.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
@@ -390,20 +432,35 @@ private fun EmptyRecipes() {
                 modifier = Modifier.size(52.dp),
             )
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(20.dp))
         Text(
-            "Nenhuma receita ainda",
+            stringResource(R.string.recipes_empty_title),
             fontFamily = FredokaFamily,
-            fontSize = 21.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center,
         )
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
-            "Crie sua primeira receita e mande os ingredientes pra lista num toque.",
+            stringResource(R.string.recipes_empty_text),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        Spacer(Modifier.height(24.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FilledTonalButton(onClick = onPaste, modifier = Modifier.height(50.dp)) {
+                Icon(painterResource(R.drawable.ic_clipboard), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.recipes_empty_paste), fontWeight = FontWeight.Bold)
+            }
+            Button(onClick = onNew, modifier = Modifier.height(50.dp)) {
+                Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.recipes_empty_create), fontWeight = FontWeight.Bold)
+            }
+        }
+        Spacer(Modifier.height(48.dp))
     }
 }

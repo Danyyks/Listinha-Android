@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import android.widget.Toast
@@ -25,8 +27,8 @@ import com.listinha.app.list.ListViewModel
 // ============================================================
 //  HomeScreen.kt  —  a raiz do app depois do login
 // ------------------------------------------------------------
-//  Tem a barra de navegação embaixo (Lista / Perfil) e troca
-//  entre as duas telas. É o "esqueleto" que segura o app logado.
+//  Tem a barra de navegação embaixo (Lista / Receitas / Perfil) e
+//  troca entre as telas. É o "esqueleto" que segura o app logado.
 // ============================================================
 
 @Composable
@@ -39,6 +41,8 @@ fun HomeScreen(
     onThemeModeChange: (String) -> Unit,   // muda o tema visual (lá em cima, no app)
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
+    sharedText: String? = null,            // texto compartilhado de outro app (vira receita)
+    onSharedTextConsumed: () -> Unit = {},
 ) {
     // Um único ListViewModel serve às duas abas (lista e histórico/perfil).
     val listViewModel: ListViewModel = viewModel()
@@ -60,10 +64,17 @@ fun HomeScreen(
     // Qual aba está aberta: 0 = Lista, 1 = Receitas, 2 = Perfil.
     var tab by rememberSaveable { mutableIntStateOf(0) }
 
+    // Detalhe/formulário de receita escondem a barra de abas (mais foco).
+    var recipesImmersive by remember { mutableStateOf(false) }
+
+    // Chegou texto de outro app ("Compartilhar -> Listinha"): vai pra aba Receitas.
+    LaunchedEffect(sharedText) { if (sharedText != null) tab = 1 }
+
     // A mágica "receita -> lista": joga os ingredientes na lista de compras,
     // cada um já na sua categoria. replace = true apaga a lista antes
     // (usado no "Criar nova lista com esta receita").
     fun sendRecipeToList(recipe: Recipe, replace: Boolean) {
+        if (recipe.ingredients.isEmpty()) return
         // Monta os pares (nome, categoria) — o nome vira "Nome (quantidade)".
         val itens = recipe.ingredients.map { ing ->
             val nome = if (ing.quantity.isBlank()) ing.name else "${ing.name} (${ing.quantity})"
@@ -109,8 +120,11 @@ fun HomeScreen(
 
                 1 -> RecipesTab(
                     userId = userId,
+                    sharedText = sharedText,
+                    onSharedTextConsumed = onSharedTextConsumed,
+                    onImmersiveChange = { recipesImmersive = it },
                     onAddToList = { sendRecipeToList(it, replace = false) },
-                    onCreateListFromRecipe = { sendRecipeToList(it, replace = true) },
+                    onReplaceList = { sendRecipeToList(it, replace = true) },
                 )
 
                 else -> ProfileScreen(
@@ -131,8 +145,8 @@ fun HomeScreen(
             }
         }
 
-        // A barra de navegação inferior.
-        NavigationBar {
+        // A barra de navegação inferior (some no detalhe/formulário de receita).
+        if (!(tab == 1 && recipesImmersive)) NavigationBar {
             NavigationBarItem(
                 selected = tab == 0,
                 onClick = { tab = 0 },

@@ -2,9 +2,109 @@
 <!--
   strings.xml  —  todos os TEXTOS visíveis do app ficam aqui.
   Vantagem: centraliza os textos (fácil revisar) e permite
-  traduzir o app para outros idiomas no futuro sem mexer no código.
+  traduzir o app para outros idiomas sem mexer no código.
 -->
 <resources>
     <string name="app_name">Listinha</string>
     <string name="app_tagline">Sua lista de compras</string>
+
+    <!-- Nome que aparece no menu "Compartilhar" dos outros apps -->
+    <string name="share_target_label">Salvar receita</string>
+
+    <!-- Comuns -->
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_close">Fechar</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Excluir</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_more">Mais opções</string>
+
+    <!-- Aba Receitas: grade -->
+    <string name="recipes_title">Receitas</string>
+    <string name="recipes_search">Buscar receita</string>
+    <string name="recipes_new">Nova receita</string>
+    <string name="recipes_none_found">Nenhuma receita encontrada.</string>
+    <string name="recipes_add_to_list">Adicionar ingredientes à lista</string>
+    <string name="recipes_empty_title">Seu caderno de receitas</string>
+    <string name="recipes_empty_text">Guarde suas receitas favoritas e mande os ingredientes pra lista num toque.</string>
+    <string name="recipes_empty_create">Criar receita</string>
+    <string name="recipes_empty_paste">Colar receita</string>
+    <plurals name="recipe_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d itens</item>
+    </plurals>
+
+    <!-- Detalhe -->
+    <plurals name="detail_servings">
+        <item quantity="one">%d porção</item>
+        <item quantity="other">%d porções</item>
+    </plurals>
+    <string name="detail_less_servings">Menos porções</string>
+    <string name="detail_more_servings">Mais porções</string>
+    <string name="detail_original">Original</string>
+    <string name="detail_ingredients">Ingredientes</string>
+    <string name="detail_tap_have">Toque no que já tem</string>
+    <string name="detail_steps">Modo de preparo</string>
+    <string name="detail_cook">Cozinhar</string>
+    <string name="detail_add_all">Adicionar à lista</string>
+    <string name="detail_add_some">Adicionar %d à lista</string>
+    <string name="detail_have_all">Você já tem tudo</string>
+    <string name="detail_replace_list">Substituir minha lista</string>
+    <string name="detail_replace_title">Substituir sua lista?</string>
+    <string name="detail_replace_text">Os itens da sua lista atual serão apagados e os ingredientes desta receita entram no lugar.</string>
+    <string name="detail_replace_confirm">Substituir</string>
+    <string name="detail_delete_title">Excluir receita?</string>
+    <string name="detail_delete_text">\"%s\" será removida. Essa ação não pode ser desfeita.</string>
+    <string name="detail_open_link_error">Não consegui abrir o link.</string>
+
+    <!-- Formulário -->
+    <string name="form_new">Nova receita</string>
+    <string name="form_edit">Editar receita</string>
+    <string name="form_paste_title">Copiou uma receita?</string>
+    <string name="form_paste_text">Cole e a gente organiza tudo.</string>
+    <string name="form_paste_button">Colar</string>
+    <string name="form_photo">Foto</string>
+    <string name="form_photo_remove">Remover foto</string>
+    <string name="form_photo_error">Não consegui carregar a foto.</string>
+    <string name="form_name">Nome</string>
+    <string name="form_name_hint">Ex: Strogonoff de frango</string>
+    <string name="form_time">Tempo</string>
+    <string name="form_minutes_suffix">min</string>
+    <string name="form_servings">Porções</string>
+    <string name="form_ingredients">Ingredientes</string>
+    <string name="form_one_per_line">Um por linha</string>
+    <string name="form_ingredients_hint">500 g de peito de frango\n1 lata de creme de leite\nSal a gosto</string>
+    <string name="form_review">Revisar</string>
+    <string name="form_steps">Modo de preparo</string>
+    <string name="form_step_per_line">Um passo por linha</string>
+    <string name="form_steps_hint">Corte o frango em cubos.\nRefogue com cebola e alho.</string>
+    <string name="form_link">Link da receita (opcional)</string>
+    <string name="form_need_name">Dê um nome à receita.</string>
+    <string name="form_review_title">Categorias</string>
+    <string name="form_review_text">Toque na categoria para trocar. É assim que os itens vão aparecer na sua lista.</string>
+    <string name="form_review_done">Pronto</string>
+
+    <!-- Colar receita -->
+    <string name="paste_title">Colar receita</string>
+    <string name="paste_text">Cole o texto com nome, ingredientes e modo de preparo. A gente separa tudo.</string>
+    <string name="paste_field">Texto da receita</string>
+    <string name="paste_organize">Organizar</string>
+    <string name="paste_done">Pronto! Confira e salve.</string>
+    <string name="paste_nothing">Não encontrei uma receita nesse texto.</string>
+
+    <!-- Modo cozinhar -->
+    <string name="cook_exit">Sair do modo cozinhar</string>
+    <string name="cook_progress">%1$d de %2$d</string>
+    <string name="cook_prepare">Separe os ingredientes</string>
+    <string name="cook_step">Passo %d</string>
+    <string name="cook_screen_on">Tela sempre acesa</string>
+    <string name="cook_previous">Anterior</string>
+    <string name="cook_next">Próximo</string>
+    <string name="cook_finish">Concluir</string>
+    <string name="cook_start_timer">Timer %s</string>
+    <string name="cook_pause_timer">Pausar timer</string>
+    <string name="cook_resume_timer">Continuar timer</string>
+    <string name="cook_cancel_timer">Cancelar timer</string>
+    <string name="cook_timer_done">Tempo esgotado!</string>
 </resources>
