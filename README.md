@@ -45,16 +45,15 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
 <table>
   <tr>
-    <td align="center"><img src="store/screenshots/02_receitas.png" width="190" /><br /><sub><b>Suas receitas</b></sub></td>
-    <td align="center"><img src="store/screenshots/03_detalhe.png" width="190" /><br /><sub><b>Só o que falta vai pra lista</b></sub></td>
-    <td align="center"><img src="store/screenshots/04_colar_receita.png" width="190" /><br /><sub><b>Cole e o app organiza</b></sub></td>
-    <td align="center"><img src="store/screenshots/05_modo_cozinhar.png" width="190" /><br /><sub><b>Modo cozinhar</b></sub></td>
+    <td align="center"><img src="store/screenshots/01_capa.png" width="190" /></td>
+    <td align="center"><img src="store/screenshots/02_vontade.png" width="190" /></td>
+    <td align="center"><img src="store/screenshots/03_feed.png" width="190" /></td>
+    <td align="center"><img src="store/screenshots/04_so_o_que_falta.png" width="190" /></td>
   </tr>
   <tr>
-    <td align="center"><img src="store/screenshots/08_modo_escuro.png" width="190" /><br /><sub><b>Modo escuro</b></sub></td>
-    <td align="center"><img src="store/screenshots/06_orcamento.png" width="190" /><br /><sub><b>Lista + orçamento</b></sub></td>
-    <td align="center"><img src="store/screenshots/01_login.png" width="190" /><br /><sub><b>Login com Google</b></sub></td>
-    <td align="center"><img src="store/screenshots/07_perfil.png" width="190" /><br /><sub><b>Perfil</b></sub></td>
+    <td align="center"><img src="store/screenshots/05_cola_aqui.png" width="190" /></td>
+    <td align="center"><img src="store/screenshots/06_mao_na_massa.png" width="190" /></td>
+    <td align="center"><img src="store/screenshots/07_orcamento.png" width="190" /></td>
   </tr>
 </table>
 
