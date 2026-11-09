@@ -2,6 +2,7 @@ package com.listinha.app.auth
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,6 +18,8 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
@@ -166,11 +169,16 @@ class AuthViewModel : ViewModel() {
                 val credential = freshGoogleCredential(context, webClientId)
                 user.reauthenticate(credential).await()
 
+                // Apagar leva alguns segundos: sem este aviso, parece que nada aconteceu.
+                Toast.makeText(context, "Excluindo sua conta...", Toast.LENGTH_SHORT).show()
+
                 // 2) Apaga os dados do usuário.
                 repo.deleteAllUserData()
 
                 // 3) Apaga a conta de login.
                 user.delete().await()
+                // Aparece na tela de login, para onde o app volta sozinho.
+                errorMessage = "Conta excluída. Seus dados foram apagados."
 
                 // 4) Limpa a credencial salva (best-effort).
                 try {
@@ -181,11 +189,30 @@ class AuthViewModel : ViewModel() {
                 }
             } catch (e: GetCredentialCancellationException) {
                 // Usuário fechou o seletor de contas: cancelou a exclusão.
-                // Nada foi apagado — nem dados, nem conta.
+                // Nada foi apagado, e a tela avisa para não restar dúvida.
+                errorMessage = "Exclusão cancelada. Nada foi apagado."
+            } catch (e: FirebaseAuthInvalidCredentialsException) {
+                // A conta confirmada não bate com a sessão aberta. Nada foi apagado.
+                Log.e("AuthViewModel", "Conta confirmada difere da sessão", e)
+                explicarContaDiferente(context, user)
             } catch (e: Exception) {
                 errorMessage = "Não foi possível excluir a conta. Tente novamente."
                 Log.e("AuthViewModel", "Falha ao excluir conta", e)
             }
+        }
+    }
+
+    // Separa os dois motivos possíveis: a conta já não existe (foi excluída em outro
+    // aparelho, então a sessão daqui está velha) ou a pessoa escolheu outra conta.
+    private suspend fun explicarContaDiferente(context: Context, user: FirebaseUser) {
+        try {
+            user.reload().await()
+            errorMessage = "Escolha a mesma conta Google com que você entrou no app."
+        } catch (e: FirebaseAuthInvalidUserException) {
+            signOut(context)
+            errorMessage = "Esta conta já foi excluída. Entre de novo para continuar."
+        } catch (e: Exception) {
+            errorMessage = "Não foi possível excluir a conta. Tente novamente."
         }
     }
 

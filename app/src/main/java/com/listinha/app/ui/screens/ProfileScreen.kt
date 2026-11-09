@@ -255,8 +255,8 @@ fun ProfileScreen(
         if (showDeleteDialog) {
             BrandAlert(
                 title = "Excluir sua *conta?*",
-                text = "Isso apaga PERMANENTEMENTE sua conta e todos os seus dados: lista, receitas, orçamento e histórico. Essa ação não pode ser desfeita.",
-                confirmLabel = "Excluir tudo",
+                text = "Isso apaga para sempre sua conta, lista, receitas, orçamento e histórico.\n\nNa próxima tela, o Google vai pedir para você tocar na sua conta. É só a confirmação de que é você.",
+                confirmLabel = "Continuar",
                 danger = true,
                 onConfirm = {
                     showDeleteDialog = false

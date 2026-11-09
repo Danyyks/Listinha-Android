@@ -2,7 +2,7 @@
 
 > Limite da Play Store: 500 caracteres por idioma. Copiar o bloco entre as tags `<pt-BR>`.
 
-## 2.0 (versionCode 3) — visual novo
+## 2.0 (versionCode 4) — visual novo
 
 <pt-BR>
 A Listinha está de cara nova!

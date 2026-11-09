@@ -33,7 +33,7 @@ android {
         // targetSdk = versão para a qual o app foi testado/otimizado (a Play exige uma recente).
         targetSdk = 36
 
-        versionCode = 3        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
+        versionCode = 4        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
         versionName = "2.0"    // versão que o usuário vê ("1.0", "1.1"...)
     }
 
