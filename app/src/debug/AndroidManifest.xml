@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Só na versão de desenvolvimento: vitrine das telas com dados falsos e
+     ligação opcional ao Firebase Emulator Suite. Nada disto vai para a loja. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:networkSecurityConfig="@xml/network_security_config">
+        <activity
+            android:name="com.listinha.app.debug.PreviewActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Listinha" />
+
+        <!-- initOrder maior que o do FirebaseInitProvider (100): roda antes dele. -->
+        <provider
+            android:name="com.listinha.app.debug.EmulatorBootProvider"
+            android:authorities="${applicationId}.emulatorboot"
+            android:exported="false"
+            android:initOrder="200" />
+    </application>
+</manifest>

@@ -10,18 +10,18 @@ App Android nativo de lista de compras e receitas — organização automática 
 
 <br />
 
-![Em breve na Google Play](https://img.shields.io/badge/Google_Play-Em_breve-6E5A94?style=for-the-badge&logo=google-play&logoColor=white)
+![Em breve na Google Play](https://img.shields.io/badge/Google_Play-Em_breve-2B0B3A?style=for-the-badge&logo=google-play&logoColor=white)
 
-<sub>🚧 Em fase de teste fechado na Google Play — link de download em breve.</sub>
+<sub>🚧 Versão 2.0 em validação final na Google Play — link de download em breve.</sub>
 
 <br />
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
-![Material 3](https://img.shields.io/badge/Material_3-6E5A94?style=flat-square&logo=materialdesign&logoColor=white)
+![Material 3](https://img.shields.io/badge/Material_3-2B0B3A?style=flat-square&logo=materialdesign&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white)
-![Versão](https://img.shields.io/badge/versão-1.1-6E5A94?style=flat-square)
+![Versão](https://img.shields.io/badge/versão-2.0-2B0B3A?style=flat-square)
 
 </div>
 
@@ -33,7 +33,7 @@ O **Listinha** é um app Android publicado na **Google Play Store**, feito para 
 
 O diferencial está em unir **receitas e lista de compras** no mesmo lugar. Você guarda suas receitas favoritas com foto, ingredientes e modo de preparo — e, quando bate a vontade de cozinhar, um toque em **"Adicionar à lista"** joga todos os ingredientes na sua lista de compras, já organizados por categoria e prontos para o supermercado.
 
-Salvar receita também é fácil: cole o texto de um blog ou compartilhe direto do Instagram, do navegador ou do WhatsApp, e o Listinha separa ingredientes, quantidades, categorias e passos sozinho. Na hora de cozinhar, o modo passo a passo tem timer e mantém a tela acesa.
+Salvar receita também é fácil: cole o texto de um blog ou compartilhe direto do Instagram, do navegador ou do WhatsApp. Quando os ingredientes e os passos vêm em linhas, o Listinha separa quantidades, categorias e passos sozinho; depois é só revisar. Na hora de cozinhar, o modo passo a passo tem timer e mantém a tela acesa.
 
 Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
@@ -61,11 +61,17 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
 <br />
 
+## Identidade visual
+
+**"Deu vontade? Virou *lista.*"** A lista de compras é uma notinha de papel picotada, com o total como cupom e o item riscado de caneta. Cada área tem um sabor chapado: manteiga na lista, pistache no mercado, morango nas receitas, mirtilo na receita nova, açaí no perfil e noite no modo cozinhar. Tudo em tema claro e escuro. O guia completo está em [`brand/README.md`](brand/README.md).
+
+<br />
+
 ## Funcionalidades
 
 - 🧾 **Receitas viram lista** — um toque transforma os ingredientes de uma receita em itens da lista de compras.
 - 📖 **Caderno de receitas** — grade estilo Pinterest com fotos grandes; receita sem foto ganha capa automática.
-- 📋 **Salvar sem esforço** — cole uma receita inteira (blog, WhatsApp, Instagram) ou compartilhe de outro app: o Listinha separa nome, ingredientes, quantidades, categorias, passos, porções e tempo sozinho.
+- 📋 **Salvar sem esforço** — cole uma receita (blog, WhatsApp, Instagram) ou compartilhe de outro app: com o texto em linhas, o Listinha separa nome, ingredientes, quantidades, categorias e passos, e você revisa antes de salvar.
 - 🍳 **Modo cozinhar** — um passo por tela, letra grande, timer em um toque e tela sempre acesa.
 - ⚖️ **Porções ajustáveis** — mude as porções e as quantidades se recalculam; marque o que já tem em casa e só o que falta vai pra lista.
 - 🗂️ **Organização automática** — itens agrupados por categoria (frutas, carnes, mercearia, limpeza e mais).
@@ -87,8 +93,8 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 | **Banco de dados** | Cloud Firestore (nuvem, por usuário) |
 | **Assíncrono** | Kotlin Coroutines |
 | **Imagens** | Coil |
-| **Testes** | JUnit (regras de texto, porções e timer) |
-| **Outros** | Splash Screen API · fontes Fredoka + Nunito |
+| **Testes** | JUnit · Firebase Emulator Suite (regras de segurança e fluxos reais) · uiautomator |
+| **Outros** | Splash Screen API · R8 · ícone adaptativo e temático · fontes Fraunces + Fredoka + Nunito |
 
 <br />
 
@@ -103,9 +109,9 @@ app/src/main/java/com/listinha/app/
 ├── list/            # ListViewModel — lista de compras e orçamento
 ├── recipes/         # RecipeViewModel — receitas
 ├── ui/
-│   ├── components/   # Componentes reutilizáveis (linhas, formulários, resumos)
+│   ├── components/   # Componentes e peças da marca (BrandKit: notinha, títulos, botões)
 │   ├── screens/      # Telas (Login, Home, Lista, Receitas, Detalhe, Modo cozinhar, Perfil)
-│   └── theme/        # Cores, tipografia e tema (claro/escuro)
+│   └── theme/        # Sabores por área, tipografia e tema (claro/escuro)
 └── util/            # Moeda, imagem, leitura de receita colada (RecipeText) e contas de cozinha (Cooking)
 ```
 
@@ -153,6 +159,8 @@ As regras que leem receita colada, escalam porções e detectam o timer têm tes
 ```bash
 gradle testDebugUnitTest
 ```
+
+Regras de segurança, fluxos contra o Firebase Emulator Suite (projeto falso, sem produção) e a vitrine de telas estão em [`docs/testes/README.md`](docs/testes/README.md).
 
 > **Atenção:** o Android usa outro motor de expressões regulares (ICU) que o Java do computador. Uma regra pode passar no teste e quebrar no celular — por isso, depois de mexer em `util/RecipeText.kt` ou `util/Cooking.kt`, abra também a aba Receitas no emulador.
 

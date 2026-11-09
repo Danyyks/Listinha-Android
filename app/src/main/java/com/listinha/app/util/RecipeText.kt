@@ -400,7 +400,7 @@ fun guessCategory(name: String): String {
     return "outros"
 }
 
-// Índices batem com recipeIconResList (RecipesScreen.kt):
+// Índices salvos em Recipe.iconIndex (mantidos por compatibilidade com receitas antigas):
 // 0 panela, 1 panqueca, 2 salada, 3 lasanha, 4 massa, 5 pizza,
 // 6 hambúrguer, 7 pão, 8 bolo, 9 bebida, 10 café, 11 peixe.
 private val iconWords = listOf(

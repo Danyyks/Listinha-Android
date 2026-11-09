@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,20 +19,21 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,24 +45,37 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.listinha.app.R
+import com.listinha.app.ui.components.BrandAlert
+import com.listinha.app.ui.components.BrandTitle
+import com.listinha.app.ui.components.OutlinePill
+import com.listinha.app.ui.components.SectionLabel
+import com.listinha.app.ui.components.capFontScale
+import com.listinha.app.ui.theme.Acai
+import com.listinha.app.ui.theme.AcaiRose
+import com.listinha.app.ui.theme.Area
+import com.listinha.app.ui.theme.AreaTheme
 import com.listinha.app.ui.theme.FredokaFamily
+import com.listinha.app.ui.theme.LocalFlavor
+import com.listinha.app.ui.theme.LocalPaper
 import com.listinha.app.util.formatCurrency
 import java.util.Calendar
 
 // ============================================================
 //  ProfileScreen.kt  —  a tela de Perfil (redesenhada)
 // ------------------------------------------------------------
-//  Foto de capa "limpa" (sem filtro roxo) com o avatar atravessando
-//  a borda de baixo — estilo dos apps modernos. Nome, saudação por
-//  horário, estatísticas, tema com ícones, e opções de avaliar/
-//  compartilhar/limpar/sair. Sem emojis — só ícones de linha.
+//  Sabor açaí em qualquer tema, foto de toranjas no topo e o avatar
+//  atravessando a borda dela. Saudação por horário, estatísticas,
+//  aparência e as opções de avaliar, compartilhar, limpar e sair.
 // ============================================================
 
 @Composable
@@ -83,222 +96,189 @@ fun ProfileScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    val firstName = userName?.split(" ")?.firstOrNull() ?: "você"
+    val firstName = userName?.split(" ")?.firstOrNull()?.replace("*", "")?.takeIf { it.isNotBlank() } ?: "você"
     val greeting = remember { greetingForHour() }
+    val versao = remember {
+        runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty()
+    }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        // ---------- FOTO DE CAPA (sem filtro roxo) ----------
-        Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
-            Image(
-                painter = painterResource(R.drawable.supermarket_cover),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp)),
-            )
-            // Leve escurecido só no topo, para os ícones da barra de status ficarem visíveis.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .align(Alignment.TopCenter)
-                    .background(
-                        Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.28f), Color.Transparent))
-                    ),
-            )
-            // Avatar sobreposto: atravessa a borda de baixo da foto.
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 50.dp)
-                    .size(104.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background) // "anel" da cor do fundo
-                    .padding(4.dp),
-            ) {
-                if (photoUrl != null) {
-                    AsyncImage(
-                        model = photoUrl,
-                        contentDescription = "Foto de perfil",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize().clip(CircleShape),
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = (userName?.firstOrNull() ?: '?').uppercaseChar().toString(),
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary,
+    AreaTheme(Area.ACAI) {
+        val flavor = LocalFlavor.current
+        val paper = LocalPaper.current
+        val rolagem = rememberScrollState()
+        val limite = with(LocalDensity.current) { 150.dp.toPx() }
+        val fotoSaiu by remember { derivedStateOf { rolagem.value > limite } }
+        Box(modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(flavor.bg)
+                .verticalScroll(rolagem),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.profile_cover),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize(),
+                )
+                // Sombra só no topo, para a hora e a bateria ficarem visíveis sobre a foto.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .align(Alignment.TopCenter)
+                        .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.28f), Color.Transparent))),
+                )
+                // O avatar atravessa a borda de baixo da foto.
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = 50.dp)
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(flavor.bg)
+                        .padding(5.dp),
+                ) {
+                    if (photoUrl != null) {
+                        AsyncImage(
+                            model = photoUrl,
+                            contentDescription = "Foto de perfil",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize().clip(CircleShape),
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize().clip(CircleShape).background(AcaiRose),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = (userName?.firstOrNull { it.isLetterOrDigit() } ?: '?').uppercaseChar().toString(),
+                                fontFamily = FredokaFamily,
+                                fontSize = 42.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Acai,
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        // Espaço para a metade do avatar que "sobra" abaixo da foto.
-        Spacer(Modifier.height(60.dp))
+            Column(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 66.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    BrandTitle("$greeting, *$firstName.*", fontSize = 38.sp, textAlign = TextAlign.Center)
+                    if (userEmail != null) {
+                        Text(userEmail, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = flavor.secondary)
+                    }
+                }
 
-        // Nome, e-mail e saudação (agora sobre o fundo claro).
-        Text(
-            text = userName ?: "Usuário",
-            fontFamily = FredokaFamily,
-            fontSize = 23.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        if (userEmail != null) {
-            Text(
-                text = userEmail,
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Spacer(Modifier.height(10.dp))
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(999.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "$greeting, $firstName!",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-        }
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    StatTile("$itemCount", "itens na lista", Modifier.weight(1f))
+                    StatTile(
+                        if (budget != null) formatCurrency(budget).replace(",00", "") else "—",
+                        "orçamento",
+                        Modifier.weight(1f),
+                    )
+                }
 
-        // ---------- CORPO ----------
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatTile("$itemCount", "itens na lista", Modifier.weight(1f))
-                StatTile(
-                    if (budget != null) formatCurrency(budget) else "—",
-                    "orçamento",
-                    Modifier.weight(1f),
-                )
-            }
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    SectionLabel("Aparência", Modifier.padding(start = 4.dp), color = flavor.secondary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ThemePill("Claro", R.drawable.ic_sun, theme == "light", Modifier.weight(1f)) { onThemeChange("light") }
+                        ThemePill("Escuro", R.drawable.ic_moon, theme == "dark", Modifier.weight(1f)) { onThemeChange("dark") }
+                        ThemePill("Auto", R.drawable.ic_auto, theme == "auto", Modifier.weight(1f)) { onThemeChange("auto") }
+                    }
+                }
 
-            Column {
+                Column(Modifier.clip(RoundedCornerShape(22.dp)).background(paper.paper)) {
+                    SettingRow(R.drawable.ic_delete, "Limpar histórico de preços") { showClearDialog = true }
+                    HorizontalDivider(color = paper.line)
+                    SettingRow(R.drawable.ic_star, "Avaliar o Listinha") { openPlayStore(context) }
+                    HorizontalDivider(color = paper.line)
+                    SettingRow(R.drawable.ic_share, "Compartilhar o app") { shareApp(context) }
+                }
+
+                OutlinePill("Sair do app", onSignOut, Modifier.fillMaxWidth(), height = 54.dp)
+
+                TextButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier.align(Alignment.CenterHorizontally).heightIn(min = 48.dp),
+                ) {
+                    Text(
+                        "Excluir conta",
+                        color = flavor.secondary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                    )
+                }
+
                 Text(
-                    "APARÊNCIA",
+                    text = "Listinha v$versao",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ThemePill("Claro", R.drawable.ic_sun, theme == "light", Modifier.weight(1f)) { onThemeChange("light") }
-                    ThemePill("Escuro", R.drawable.ic_moon, theme == "dark", Modifier.weight(1f)) { onThemeChange("dark") }
-                    ThemePill("Auto", R.drawable.ic_auto, theme == "auto", Modifier.weight(1f)) { onThemeChange("auto") }
-                }
-            }
-
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                SettingRow(R.drawable.ic_delete, "Limpar histórico de preços") { showClearDialog = true }
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-                SettingRow(R.drawable.ic_star, "Avaliar o Listinha") { openPlayStore(context) }
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-                SettingRow(R.drawable.ic_share, "Compartilhar o app") { shareApp(context) }
-            }
-
-            OutlinedButton(
-                onClick = onSignOut,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.error),
-            ) {
-                Text("Sair do app", color = MaterialTheme.colorScheme.error)
-            }
-
-            Spacer(Modifier.height(6.dp))
-            TextButton(
-                onClick = { showDeleteDialog = true },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    "Excluir conta",
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 13.sp,
+                    color = flavor.secondary,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
                 )
             }
-
-            Text(
-                text = "Listinha v1.0",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                textAlign = TextAlign.Center,
-            )
         }
-    }
 
-    if (showClearDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearDialog = false },
-            title = { Text("Limpar histórico de preços?") },
-            text = { Text("As sugestões de preço serão esquecidas. Essa ação não pode ser desfeita.") },
-            confirmButton = {
-                TextButton(onClick = {
+        if (fotoSaiu) {
+            Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(flavor.bg))
+        }
+        }
+
+        if (showClearDialog) {
+            BrandAlert(
+                title = "Limpar *histórico?*",
+                text = "As sugestões de preço serão esquecidas. Essa ação não pode ser desfeita.",
+                confirmLabel = "Limpar",
+                onConfirm = {
                     onClearPriceHistory()
                     showClearDialog = false
-                }) { Text("Limpar") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) { Text("Cancelar") }
-            },
-        )
-    }
+                },
+                onDismiss = { showClearDialog = false },
+            )
+        }
 
-    // Confirmação FORTE para excluir a conta (ação irreversível).
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Excluir sua conta?") },
-            text = { Text("Isso apaga PERMANENTEMENTE sua conta e todos os seus dados — lista, receitas, orçamento e histórico. Essa ação não pode ser desfeita.") },
-            confirmButton = {
-                TextButton(onClick = {
+        // Confirmação forte para excluir a conta, que é irreversível.
+        if (showDeleteDialog) {
+            BrandAlert(
+                title = "Excluir sua *conta?*",
+                text = "Isso apaga PERMANENTEMENTE sua conta e todos os seus dados: lista, receitas, orçamento e histórico. Essa ação não pode ser desfeita.",
+                confirmLabel = "Excluir tudo",
+                danger = true,
+                onConfirm = {
                     showDeleteDialog = false
                     onDeleteAccount()
-                }) { Text("Excluir tudo", color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
-            },
-        )
+                },
+                onDismiss = { showDeleteDialog = false },
+            )
+        }
     }
 }
 
 @Composable
 private fun StatTile(value: String, label: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    val paper = LocalPaper.current
+    Column(
+        modifier
+            .clip(RoundedCornerShape(22.dp))
+            .background(paper.paper)
+            .padding(horizontal = 18.dp, vertical = 16.dp),
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(value, fontFamily = FredokaFamily, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text(label, fontSize = 12.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+        Text(value, fontFamily = FredokaFamily, fontSize = capFontScale(28.sp, 1.15f), fontWeight = FontWeight.Bold, color = paper.brand, maxLines = 1)
+        Text(label, fontSize = capFontScale(13.sp, 1.3f), fontWeight = FontWeight.Bold, color = paper.muted, maxLines = 1)
     }
 }
 
@@ -310,53 +290,43 @@ private fun ThemePill(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    val bg = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
-    val fg = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val flavor = LocalFlavor.current
+    val bg = if (selected) flavor.title else flavor.soft
+    val fg = if (selected) flavor.on else flavor.secondary
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
+            .height(68.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(bg)
-            .clickable { onClick() }
-            .padding(vertical = 12.dp),
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
     ) {
-        Icon(painterResource(iconRes), contentDescription = null, tint = fg, modifier = Modifier.size(18.dp))
-        Text(label, fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, color = fg)
+        Icon(painterResource(iconRes), contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
+        Text(label, fontSize = capFontScale(14.sp, 1.3f), fontWeight = FontWeight.ExtraBold, color = fg, maxLines = 1)
     }
 }
 
 @Composable
 private fun SettingRow(iconRes: Int, label: String, onClick: () -> Unit) {
+    val paper = LocalPaper.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = 60.dp)
             .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 15.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer),
+            modifier = Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(paper.field),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                painterResource(iconRes),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(18.dp),
-            )
+            Icon(painterResource(iconRes), contentDescription = null, tint = paper.brand, modifier = Modifier.size(19.dp))
         }
         Spacer(Modifier.width(14.dp))
-        Text(label, fontSize = 14.5.sp, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
-        Icon(
-            painterResource(R.drawable.ic_chevron_right),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.outline,
-            modifier = Modifier.size(18.dp),
-        )
+        Text(label, fontSize = 15.5.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f), color = paper.ink)
+        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = paper.muted, modifier = Modifier.size(18.dp))
     }
 }
 

@@ -2,6 +2,18 @@
 
 > Limite da Play Store: 500 caracteres por idioma. Copiar o bloco entre as tags `<pt-BR>`.
 
+## 2.0 (versionCode 3) — visual novo
+
+<pt-BR>
+A Listinha está de cara nova!
+• Logo, cores e telas novas em todo o app, em tema claro e escuro
+• Sua lista virou uma notinha, com total e orçamento no rodapé
+• Modo compra com o próximo item em destaque
+• Receitas e modo cozinhar repaginados
+• App bem mais leve para baixar
+• Várias correções de estabilidade
+</pt-BR>
+
 ## 1.1 (versionCode 2) — redesign da aba Receitas
 
 <pt-BR>

@@ -33,19 +33,31 @@ android {
         // targetSdk = versão para a qual o app foi testado/otimizado (a Play exige uma recente).
         targetSdk = 36
 
-        versionCode = 2        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
-        versionName = "1.1"    // versão que o usuário vê ("1.0", "1.1"...)
+        versionCode = 3        // número interno que SOBE a cada envio para a loja (1, 2, 3...)
+        versionName = "2.0"    // versão que o usuário vê ("1.0", "1.1"...)
     }
 
     buildTypes {
         release {
-            // Na versão final (release), encolhe e ofusca o código para ficar menor/seguro.
-            // Ligamos de verdade na Fase 8 (publicação); por ora deixamos desligado.
-            isMinifyEnabled = false
+            // Na versão da loja o R8 encolhe e otimiza o código e remove recursos sem uso.
+            // O mapa para ler relatórios de falha já vai dentro do .aab enviado à Play.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // Testa o R8 contra os emuladores, sem falar com produção: gradle assembleDebug -Pr8debug=true
+            if (providers.gradleProperty("r8debug").isPresent) {
+                isMinifyEnabled = true
+                isShrinkResources = true
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            }
         }
     }
 

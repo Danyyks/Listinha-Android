@@ -1,11 +1,21 @@
 package com.listinha.app.ui.screens
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,13 +26,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import android.widget.Toast
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.listinha.app.R
 import com.listinha.app.data.Recipe
 import com.listinha.app.list.ListViewModel
+import com.listinha.app.ui.components.capFontScale
+import com.listinha.app.ui.theme.Area
+import com.listinha.app.ui.theme.AreaTheme
+import com.listinha.app.ui.theme.LocalFlavor
+import com.listinha.app.ui.theme.LocalPaper
 
 // ============================================================
 //  HomeScreen.kt  —  a raiz do app depois do login
@@ -51,7 +73,7 @@ fun HomeScreen(
     // Reinicia o ViewModel sempre que o usuário logado muda. Sem isto, depois
     // de um logout+login o app mostraria os dados da conta ANTERIOR (o
     // ViewModel sobrevive à troca de tela porque a Activity não é destruída).
-    LaunchedEffect(userId) { listViewModel.start() }
+    LaunchedEffect(userId) { listViewModel.start(userId) }
 
     // Se uma ação (adicionar/editar/apagar) falhar, avisa com um Toast.
     LaunchedEffect(listViewModel.errorMessage) {
@@ -64,8 +86,11 @@ fun HomeScreen(
     // Qual aba está aberta: 0 = Lista, 1 = Receitas, 2 = Perfil.
     var tab by rememberSaveable { mutableIntStateOf(0) }
 
+    // Modo compra fica aqui porque a barra de abas também muda de cor com ele.
+    var shoppingMode by rememberSaveable { mutableStateOf(false) }
+
     // Detalhe/formulário de receita escondem a barra de abas (mais foco).
-    var recipesImmersive by remember { mutableStateOf(false) }
+    var recipesImmersive by rememberSaveable { mutableStateOf(false) }
 
     // Chegou texto de outro app ("Compartilhar -> Listinha"): vai pra aba Receitas.
     LaunchedEffect(sharedText) { if (sharedText != null) tab = 1 }
@@ -105,6 +130,9 @@ fun HomeScreen(
                     items = listViewModel.items,
                     priceHistory = listViewModel.priceHistory,
                     budget = listViewModel.budget,
+                    shoppingMode = shoppingMode,
+                    onShoppingModeChange = { shoppingMode = it },
+                    onOpenRecipes = { tab = 1 },
                     onAddItem = { name, category, price, quantity ->
                         listViewModel.addItem(name, category, price, quantity)
                     },
@@ -145,26 +173,75 @@ fun HomeScreen(
             }
         }
 
-        // A barra de navegação inferior (some no detalhe/formulário de receita).
-        if (!(tab == 1 && recipesImmersive)) NavigationBar {
-            NavigationBarItem(
-                selected = tab == 0,
-                onClick = { tab = 0 },
-                icon = { Icon(painterResource(R.drawable.ic_list), contentDescription = null) },
-                label = { Text("Lista") },
-            )
-            NavigationBarItem(
-                selected = tab == 1,
-                onClick = { tab = 1 },
-                icon = { Icon(painterResource(R.drawable.ic_recipes), contentDescription = null) },
-                label = { Text("Receitas") },
-            )
-            NavigationBarItem(
-                selected = tab == 2,
-                onClick = { tab = 2 },
-                icon = { Icon(painterResource(R.drawable.ic_person), contentDescription = null) },
-                label = { Text("Perfil") },
+        // A barra de abas some no detalhe/formulário de receita.
+        if (!(tab == 1 && recipesImmersive)) {
+            val area = when {
+                tab == 0 && shoppingMode && listViewModel.items.isNotEmpty() -> Area.MERCADO
+                tab == 0 -> Area.LISTA
+                tab == 1 -> Area.RECEITAS
+                else -> Area.ACAI
+            }
+            AreaTheme(area) { TabBar(tab) { tab = it } }
+        }
+    }
+}
+
+// Barra de abas sobre o papel; a aba atual ganha uma pílula na cor da área.
+@Composable
+internal fun TabBar(selected: Int, onSelect: (Int) -> Unit) {
+    val paper = LocalPaper.current
+    Column(Modifier.fillMaxWidth().background(paper.paper).navigationBarsPadding()) {
+        HorizontalDivider(color = paper.line)
+        Row(
+            modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TabItem("Lista", R.drawable.ic_list, selected == 0, Modifier.weight(1f)) { onSelect(0) }
+            TabItem("Receitas", R.drawable.ic_recipes, selected == 1, Modifier.weight(1f)) { onSelect(1) }
+            TabItem("Perfil", R.drawable.ic_person, selected == 2, Modifier.weight(1f)) { onSelect(2) }
+        }
+    }
+}
+
+@Composable
+private fun TabItem(
+    label: String,
+    @DrawableRes icon: Int,
+    selected: Boolean,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    val paper = LocalPaper.current
+    val flavor = LocalFlavor.current
+    Column(
+        modifier = modifier
+            .height(64.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 62.dp, height = 32.dp)
+                .clip(RoundedCornerShape(999.dp))
+                .background(if (selected) flavor.title else Color.Transparent),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painterResource(icon),
+                contentDescription = null,
+                tint = if (selected) flavor.on else paper.muted,
+                modifier = Modifier.size(22.dp),
             )
         }
+        Text(
+            label,
+            fontSize = capFontScale(13.sp, 1.15f),
+            maxLines = 1,
+            fontWeight = if (selected) FontWeight.Black else FontWeight.Bold,
+            color = if (selected) paper.ink else paper.muted,
+        )
     }
 }

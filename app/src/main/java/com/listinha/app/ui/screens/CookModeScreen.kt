@@ -3,9 +3,7 @@ package com.listinha.app.ui.screens
 import android.media.RingtoneManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,14 +21,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,11 +48,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.listinha.app.R
 import com.listinha.app.data.RecipeIngredient
-import com.listinha.app.data.categoryColor
+import com.listinha.app.ui.components.BrandTitle
+import com.listinha.app.ui.components.FilledPill
+import com.listinha.app.ui.components.OutlinePill
+import com.listinha.app.ui.components.RoundIconButton
+import com.listinha.app.ui.components.SectionLabel
+import com.listinha.app.ui.theme.Area
+import com.listinha.app.ui.theme.AreaTheme
 import com.listinha.app.ui.theme.FredokaFamily
+import com.listinha.app.ui.theme.FrauncesFamily
+import com.listinha.app.ui.theme.LocalFlavor
 import com.listinha.app.util.detectTimerSeconds
 import com.listinha.app.util.formatClock
 import kotlinx.coroutines.delay
@@ -84,8 +89,11 @@ fun CookModeScreen(
     onClose: () -> Unit,
 ) {
     BackHandler(onBack = onClose)
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        CookModeContent(recipeName, ingredients, steps, onClose)
+    // Sempre no sabor noite: tela escura cansa menos no fogão e gasta menos bateria.
+    AreaTheme(Area.COZINHAR) {
+        Surface(modifier = Modifier.fillMaxSize(), color = LocalFlavor.current.bg) {
+            CookModeContent(recipeName, ingredients, steps, onClose)
+        }
     }
 }
 
@@ -111,10 +119,10 @@ private fun CookModeContent(
     val scope = rememberCoroutineScope()
 
     // --- O timer (um por vez) ---
-    var timerPage by remember { mutableIntStateOf(-1) }   // de qual passo é o timer (-1 = nenhum)
-    var remaining by remember { mutableIntStateOf(0) }    // segundos que faltam
-    var running by remember { mutableStateOf(false) }
-    var finished by remember { mutableStateOf(false) }
+    var timerPage by rememberSaveable { mutableIntStateOf(-1) }   // de qual passo é o timer (-1 = nenhum)
+    var remaining by rememberSaveable { mutableIntStateOf(0) }    // segundos que faltam
+    var running by rememberSaveable { mutableStateOf(false) }
+    var finished by rememberSaveable { mutableStateOf(false) }
 
     // Conta 1 segundo de cada vez enquanto estiver rodando.
     LaunchedEffect(running) {
@@ -135,6 +143,8 @@ private fun CookModeContent(
         }
     }
 
+    val flavor = LocalFlavor.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -143,21 +153,21 @@ private fun CookModeContent(
     ) {
         // --- Topo: fechar, nome, "3 de 6" e a barra de progresso ---
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 4.dp, end = 20.dp, top = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 20.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onClose, modifier = Modifier.size(48.dp)) {
                 Icon(
                     painterResource(R.drawable.ic_close),
                     contentDescription = stringResource(R.string.cook_exit),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = flavor.text,
                 )
             }
             Text(
                 recipeName,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = flavor.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -169,21 +179,21 @@ private fun CookModeContent(
                     fontFamily = FredokaFamily,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = flavor.text,
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(flavor.soft)
                         .clickable { scope.launch { pager.animateScrollToPage(timerPage) } }
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
                 )
                 Spacer(Modifier.width(10.dp))
             }
             if (pager.currentPage > 0) {
                 Text(
                     stringResource(R.string.cook_progress, pager.currentPage, steps.size),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black,
+                    color = flavor.title,
                 )
             }
         }
@@ -196,32 +206,28 @@ private fun CookModeContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 28.dp, vertical = 36.dp),
+                    .padding(horizontal = 20.dp, vertical = 34.dp),
             ) {
                 if (page == 0) {
                     IngredientsPage(ingredients)
                 } else {
                     val step = steps[page - 1]
-                    Text(
-                        stringResource(R.string.cook_step, page),
-                        fontFamily = FredokaFamily,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(12.dp))
+                    SectionLabel(stringResource(R.string.cook_step, page), color = flavor.title)
+                    Spacer(Modifier.height(14.dp))
                     Text(
                         step,
-                        fontSize = 27.sp,
-                        lineHeight = 37.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        fontFamily = FrauncesFamily,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 33.sp,
+                        lineHeight = 40.sp,
+                        letterSpacing = (-0.015).em,
+                        color = flavor.text,
                     )
 
                     // Timer, se o passo falar de tempo.
                     val seconds = remember(step) { detectTimerSeconds(step) }
                     if (seconds != null) {
-                        Spacer(Modifier.height(32.dp))
+                        Spacer(Modifier.height(28.dp))
                         if (timerPage == page && (running || finished || remaining > 0)) {
                             TimerCard(
                                 remaining = remaining,
@@ -235,12 +241,17 @@ private fun CookModeContent(
                                 },
                             )
                         } else {
-                            StartTimerButton(seconds) {
-                                timerPage = page
-                                remaining = seconds
-                                finished = false
-                                running = true
-                            }
+                            OutlinePill(
+                                text = stringResource(R.string.cook_start_timer, formatClock(seconds)),
+                                height = 56.dp,
+                                fontSize = 17.sp,
+                                onClick = {
+                                    timerPage = page
+                                    remaining = seconds
+                                    finished = false
+                                    running = true
+                                },
+                            )
                         }
                     }
                 }
@@ -249,50 +260,40 @@ private fun CookModeContent(
 
         // --- Rodapé: "tela acesa" + Anterior / Próximo ---
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painterResource(R.drawable.ic_sun),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(14.dp),
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                stringResource(R.string.cook_screen_on),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Icon(painterResource(R.drawable.ic_sun), contentDescription = null, tint = flavor.secondary, modifier = Modifier.size(17.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.cook_screen_on), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = flavor.secondary)
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             val last = pager.currentPage == pageCount - 1
-            OutlinedButton(
+            OutlinePill(
+                text = stringResource(R.string.cook_previous),
                 onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage - 1) } },
                 enabled = pager.currentPage > 0,
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline),
-                modifier = Modifier.weight(1f).height(60.dp),
-            ) {
-                Text(stringResource(R.string.cook_previous), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
-            }
-            Button(
+                color = flavor.text,
+                borderColor = flavor.soft,
+                height = 58.dp,
+                fontSize = 17.sp,
+                horizontalPadding = 8.dp,
+                modifier = Modifier.weight(1f),
+            )
+            FilledPill(
+                text = stringResource(if (last) R.string.cook_finish else R.string.cook_next),
                 onClick = {
                     if (last) onClose()
                     else scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
                 },
-                modifier = Modifier.weight(1.4f).height(60.dp),
-            ) {
-                Text(
-                    stringResource(if (last) R.string.cook_finish else R.string.cook_next),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                )
-            }
+                height = 58.dp,
+                fontSize = 17.sp,
+                modifier = Modifier.weight(1.4f),
+            )
         }
     }
 }
@@ -300,20 +301,21 @@ private fun CookModeContent(
 // A barrinha de progresso em segmentos (um por página).
 @Composable
 private fun ProgressSegments(total: Int, current: Int) {
+    val flavor = LocalFlavor.current
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         repeat(total) { i ->
             val color by animateColorAsState(
-                if (i <= current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                if (i <= current) flavor.title else flavor.soft,
                 label = "segment",
             )
             Box(
                 Modifier
                     .weight(1f)
-                    .height(5.dp)
-                    .clip(RoundedCornerShape(3.dp))
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(99.dp))
                     .background(color),
             )
         }
@@ -323,65 +325,27 @@ private fun ProgressSegments(total: Int, current: Int) {
 // Página 1: os ingredientes, para separar tudo antes de começar.
 @Composable
 private fun IngredientsPage(ingredients: List<RecipeIngredient>) {
-    Text(
-        stringResource(R.string.cook_prepare),
-        fontFamily = FredokaFamily,
-        fontSize = 26.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onBackground,
-    )
+    val flavor = LocalFlavor.current
+    BrandTitle(stringResource(R.string.cook_prepare), fontSize = 38.sp)
     Spacer(Modifier.height(18.dp))
     ingredients.forEach { ing ->
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 9.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(categoryColor(ing.category)),
-            )
-            Spacer(Modifier.width(14.dp))
             Text(
                 ing.name,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Bold,
+                color = flavor.text,
                 modifier = Modifier.weight(1f),
             )
             if (ing.quantity.isNotBlank()) {
-                Spacer(Modifier.width(10.dp))
-                Text(ing.quantity, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.width(12.dp))
+                Text(ing.quantity, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = flavor.secondary)
             }
         }
-    }
-}
-
-// Pílula "Timer 25:00" — toque e começa a contar.
-@Composable
-private fun StartTimerButton(seconds: Int, onStart: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(26.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .clickable(onClick = onStart)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painterResource(R.drawable.ic_clock),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(22.dp),
-        )
-        Spacer(Modifier.width(10.dp))
-        Text(
-            stringResource(R.string.cook_start_timer, formatClock(seconds)),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
+        HorizontalDivider(color = flavor.soft)
     }
 }
 
@@ -394,65 +358,53 @@ private fun TimerCard(
     onToggle: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val flavor = LocalFlavor.current
+    if (finished) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            BrandTitle(stringResource(R.string.cook_timer_done), fontSize = 34.sp, modifier = Modifier.weight(1f, fill = false))
+            Spacer(Modifier.width(12.dp))
+            RoundIconButton(
+                icon = R.drawable.ic_close,
+                description = stringResource(R.string.cook_cancel_timer),
+                onClick = onCancel,
+                iconSize = 20.dp,
+            )
+        }
+        return
+    }
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(26.dp))
-            .background(
-                if (finished) MaterialTheme.colorScheme.errorContainer
-                else MaterialTheme.colorScheme.primaryContainer
-            )
-            .padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+            .clip(RoundedCornerShape(999.dp))
+            .background(flavor.title)
+            .padding(start = 22.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            painterResource(R.drawable.ic_clock),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(26.dp),
-        )
-        Spacer(Modifier.width(14.dp))
         Text(
-            if (finished) stringResource(R.string.cook_timer_done) else formatClock(remaining),
+            formatClock(remaining),
             fontFamily = FredokaFamily,
-            fontSize = if (finished) 22.sp else 34.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = if (finished) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
+            fontSize = 42.sp,
+            fontWeight = FontWeight.Bold,
+            color = flavor.on,
         )
         Spacer(Modifier.width(14.dp))
-        if (!finished) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .clickable(onClick = onToggle),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painterResource(if (running) R.drawable.ic_pause else R.drawable.ic_play),
-                    contentDescription = stringResource(
-                        if (running) R.string.cook_pause_timer else R.string.cook_resume_timer
-                    ),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
-            Spacer(Modifier.width(8.dp))
-        }
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                .clickable(onClick = onCancel),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painterResource(R.drawable.ic_close),
-                contentDescription = stringResource(R.string.cook_cancel_timer),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        RoundIconButton(
+            icon = if (running) R.drawable.ic_pause else R.drawable.ic_play,
+            description = stringResource(if (running) R.string.cook_pause_timer else R.string.cook_resume_timer),
+            onClick = onToggle,
+            size = 56.dp,
+            iconSize = 22.dp,
+            container = flavor.on,
+            contentColor = flavor.title,
+        )
+        Spacer(Modifier.width(8.dp))
+        RoundIconButton(
+            icon = R.drawable.ic_close,
+            description = stringResource(R.string.cook_cancel_timer),
+            onClick = onCancel,
+            size = 48.dp,
+            iconSize = 20.dp,
+            container = flavor.title,
+            contentColor = flavor.on,
+        )
     }
 }

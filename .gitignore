@@ -27,3 +27,7 @@ keystore.properties
 # Referências internas da loja (IDs, fingerprints, e-mails). Não versionar.
 store/signing-info.md
 store/testers.md
+
+# logs gerados pelo Emulator Suite
+firebase-debug.log
+firestore-debug.log

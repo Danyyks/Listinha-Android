@@ -1,40 +1,27 @@
 package com.listinha.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.listinha.app.R
@@ -42,26 +29,37 @@ import com.listinha.app.data.Item
 import com.listinha.app.data.categoryByKey
 import com.listinha.app.data.sortCategoryKeys
 import com.listinha.app.ui.components.AddItemForm
+import com.listinha.app.ui.components.BrandAlert
+import com.listinha.app.ui.components.BrandTitle
 import com.listinha.app.ui.components.BudgetSummary
 import com.listinha.app.ui.components.CategoryGroup
 import com.listinha.app.ui.components.EditItemDialog
+import com.listinha.app.ui.components.EmptyArt
+import com.listinha.app.ui.components.FilledPill
+import com.listinha.app.ui.components.OutlinePill
+import com.listinha.app.ui.components.PaperTicket
 import com.listinha.app.ui.components.ShoppingModeBanner
-import com.listinha.app.ui.theme.FredokaFamily
+import com.listinha.app.ui.theme.Area
+import com.listinha.app.ui.theme.AreaTheme
+import com.listinha.app.ui.theme.LocalFlavor
 
 // ============================================================
 //  ListScreen.kt  —  a tela principal: a lista de compras
 // ------------------------------------------------------------
-//  Junta o formulário, os grupos por categoria e o total.
-//  Espelha a página ListaCompras.jsx do React.
+//  A lista é uma notinha de papel picotada sobre o fundo manteiga.
+//  No modo compra, a tela muda para o pistache e mostra o próximo
+//  item em destaque. Quem guarda o modo compra é a HomeScreen,
+//  porque a barra de abas também muda de cor com ele.
 // ============================================================
 
-@OptIn(ExperimentalMaterial3Api::class) // TopAppBar ainda é marcada como "experimental"
 @Composable
 fun ListScreen(
     userName: String?,
     items: List<Item>,
     priceHistory: Map<String, Double>,
     budget: Double?,
+    shoppingMode: Boolean,
+    onShoppingModeChange: (Boolean) -> Unit,
     onAddItem: (name: String, category: String, price: Double, quantity: Double) -> Unit,
     onToggle: (Item) -> Unit,
     onDelete: (Item) -> Unit,
@@ -69,91 +67,61 @@ fun ListScreen(
     onSetBudget: (Double?) -> Unit,
     onClearBought: () -> Unit,
     onClearAll: () -> Unit,
+    onOpenRecipes: () -> Unit,
 ) {
-    // Controla se a caixa de confirmação de "Nova lista" está aberta.
     var showClearAllDialog by remember { mutableStateOf(false) }
-    // Item sendo editado no momento (null = nenhum diálogo de edição aberto).
     var editingItem by remember { mutableStateOf<Item?>(null) }
-    // Modo de compra ligado? (rememberSaveable = sobrevive a girar a tela).
-    var shoppingMode by rememberSaveable { mutableStateOf(false) }
 
-    // --- Cálculos derivados da lista ---
-    val total = items.sumOf { it.total }                 // soma de tudo
-    val boughtCount = items.count { it.bought }           // quantos já foram pegos
-    val grouped = items.groupBy { it.category }            // itens agrupados por categoria
-    val sortedKeys = sortCategoryKeys(grouped.keys)        // categorias na ordem certa
-    val firstName = userName?.split(" ")?.firstOrNull() ?: userName
-    // Categorias personalizadas = as que aparecem nos itens mas não são fixas.
+    val total = items.sumOf { it.total }
+    val boughtCount = items.count { it.bought }
+    val grouped = items.groupBy { it.category }
+    val sortedKeys = sortCategoryKeys(grouped.keys)
+    // Sem itens não há o que comprar, mesmo que o modo tenha ficado ligado.
+    val shopping = shoppingMode && items.isNotEmpty()
     val customCategories = items.map { it.category }
         .filter { categoryByKey(it) == null }
         .distinct()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-                title = {
-                    Column {
-                        Text(
-                            "Listinha",
-                            fontFamily = FredokaFamily,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        // Saudação embaixo do nome.
-                        if (firstName != null) {
-                            Text(
-                                "Olá, $firstName!",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    // Modo de compra como botão tonal evidente (só com itens).
-                    if (items.isNotEmpty()) {
-                        FilledTonalButton(
-                            onClick = { shoppingMode = !shoppingMode },
-                            modifier = Modifier.padding(end = 8.dp),
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_cart),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(if (shoppingMode) "Concluir" else "Comprar")
-                        }
-                    }
-                },
-            )
-        },
-    ) { innerPadding ->
+    AreaTheme(if (shopping) Area.MERCADO else Area.LISTA) {
+        val flavor = LocalFlavor.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()), // deixa a tela rolar
+                .background(flavor.bg)
+                .statusBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Spacer(Modifier.height(8.dp))
-
-            if (shoppingMode) {
-                // No modo de compra: em vez do formulário, mostra o progresso.
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BrandTitle(
+                    if (shopping) "No *mercado*" else "O que *falta*",
+                    fontSize = 44.sp,
+                    modifier = Modifier.weight(1f),
+                )
                 if (items.isNotEmpty()) {
-                    ShoppingModeBanner(
-                        userName = userName,
-                        boughtCount = boughtCount,
-                        totalCount = items.size,
-                        nextItemName = items.firstOrNull { !it.bought }?.name,
+                    Spacer(Modifier.width(12.dp))
+                    FilledPill(
+                        text = if (shopping) "Concluir" else "Comprar",
+                        onClick = { onShoppingModeChange(!shopping) },
+                        icon = if (shopping) R.drawable.ic_check else R.drawable.ic_cart,
+                        height = 48.dp,
                     )
                 }
+            }
+
+            if (shopping) {
+                ShoppingModeBanner(
+                    userName = userName,
+                    boughtCount = boughtCount,
+                    totalCount = items.size,
+                    nextItemName = items.firstOrNull { !it.bought }?.name,
+                )
             } else {
-                // Fora do modo de compra: formulário de adicionar item.
                 AddItemForm(
                     onAddItem = onAddItem,
                     customCategories = customCategories,
@@ -161,100 +129,84 @@ fun ListScreen(
                 )
             }
 
-            Spacer(Modifier.height(8.dp))
-
             if (items.isEmpty()) {
-                // Lista vazia: mensagem simpática.
-                Text(
-                    text = if (firstName != null)
-                        "$firstName, sua lista está vazia.\nAdicione o primeiro item acima!"
-                    else
-                        "Sua lista está vazia.\nAdicione o primeiro item acima!",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                )
+                EmptyList(onOpenRecipes)
             } else {
-                // Um grupo para cada categoria, na ordem definida.
-                sortedKeys.forEach { categoryKey ->
-                    CategoryGroup(
-                        categoryKey = categoryKey,
-                        items = grouped[categoryKey].orEmpty(),
-                        onToggle = onToggle,
-                        onDelete = onDelete,
-                        onEdit = { editingItem = it },
+                PaperTicket(Modifier.fillMaxWidth()) {
+                    sortedKeys.forEachIndexed { indice, categoryKey ->
+                        CategoryGroup(
+                            categoryKey = categoryKey,
+                            items = grouped[categoryKey].orEmpty(),
+                            onToggle = onToggle,
+                            onDelete = onDelete,
+                            onEdit = { editingItem = it },
+                            first = indice == 0,
+                            shopping = shopping,
+                        )
+                    }
+                    BudgetSummary(
+                        total = total,
+                        budget = budget,
+                        itemCount = items.size,
+                        boughtCount = boughtCount,
+                        onSetBudget = onSetBudget,
                     )
                 }
 
-                Spacer(Modifier.height(8.dp))
-
-                // Resumo de total + orçamento (fica vermelho se estourar).
-                BudgetSummary(
-                    total = total,
-                    budget = budget,
-                    itemCount = items.size,
-                    boughtCount = boughtCount,
-                    onSetBudget = onSetBudget,
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                // Botões de limpar (só aparecem quando fazem sentido).
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (boughtCount > 0) {
-                        OutlinedButton(
-                            onClick = onClearBought,
-                            modifier = Modifier.weight(1f),
-                            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-                        ) {
-                            Text("Limpar comprados")
+                // Limpar e recomeçar não aparecem no corredor do mercado.
+                if (!shopping) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        if (boughtCount > 0) {
+                            OutlinePill("Limpar comprados", onClearBought, Modifier.weight(1f))
                         }
-                    }
-                    OutlinedButton(
-                        onClick = { showClearAllDialog = true },
-                        modifier = Modifier.weight(1f),
-                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-                    ) {
-                        Text("Nova lista")
+                        OutlinePill("Nova lista", { showClearAllDialog = true }, Modifier.weight(1f))
                     }
                 }
             }
-
-            Spacer(Modifier.height(24.dp))
         }
-    }
 
-    // Caixa de confirmação antes de apagar tudo (ação sem volta).
-    if (showClearAllDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearAllDialog = false },
-            title = { Text("Apagar toda a lista?") },
-            text = { Text("Isso remove todos os itens. Essa ação não pode ser desfeita.") },
-            confirmButton = {
-                TextButton(onClick = {
+        if (showClearAllDialog) {
+            BrandAlert(
+                title = "Apagar toda a *lista?*",
+                text = "Isso remove todos os itens. Essa ação não pode ser desfeita.",
+                confirmLabel = "Apagar",
+                danger = true,
+                onConfirm = {
                     onClearAll()
                     showClearAllDialog = false
-                }) { Text("Apagar") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showClearAllDialog = false }) { Text("Cancelar") }
-            },
-        )
-    }
+                },
+                onDismiss = { showClearAllDialog = false },
+            )
+        }
 
-    // Diálogo de edição: aparece quando um item foi tocado.
-    editingItem?.let { item ->
-        EditItemDialog(
-            item = item,
-            customCategories = customCategories,
-            onSave = { name, category, price, quantity ->
-                onEditItem(item.id, name, category, price, quantity)
-                editingItem = null
-            },
-            onDismiss = { editingItem = null },
+        editingItem?.let { item ->
+            EditItemDialog(
+                item = item,
+                customCategories = customCategories,
+                onSave = { name, category, price, quantity ->
+                    onEditItem(item.id, name, category, price, quantity)
+                    editingItem = null
+                },
+                onDismiss = { editingItem = null },
+            )
+        }
+    }
+}
+
+// Estado vazio: foto e notinha inclinadas, um convite e o atalho para as receitas.
+@Composable
+private fun EmptyList(onOpenRecipes: () -> Unit) {
+    val flavor = LocalFlavor.current
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        EmptyArt("sua *lista*", R.drawable.empty_cookies)
+        BrandTitle("Lista *limpinha.*", fontSize = 38.sp)
+        Text(
+            "Escreva o primeiro item ali em cima ou mande os ingredientes de uma receita.",
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = flavor.secondary,
         )
+        OutlinePill("Ver receitas", onOpenRecipes)
     }
 }

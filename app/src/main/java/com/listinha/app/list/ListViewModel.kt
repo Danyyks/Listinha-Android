@@ -49,6 +49,7 @@ class ListViewModel : ViewModel() {
     // Guarda a "assinatura" atual da lista para podermos CANCELÁ-LA quando
     // o usuário troca (logout + login, ou outra conta no mesmo aparelho).
     private var observeJob: Job? = null
+    private var startedFor: String? = null
 
     // Roda um trecho em segundo plano capturando qualquer erro (sem derrubar o
     // app). Agora, além de registrar no log, AVISA o usuário via errorMessage.
@@ -73,7 +74,11 @@ class ListViewModel : ViewModel() {
     // ficava no `init` e rodava só uma vez — o que fazia o app mostrar dados
     // da conta ANTERIOR depois de um logout+login. Agora cada conta começa
     // do zero: cancelamos a assinatura antiga, zeramos o estado e reassinamos.
-    fun start() {
+    fun start(userId: String) {
+        // Mesma conta com a assinatura viva (ex.: girou a tela): nada a refazer.
+        if (userId == startedFor && observeJob?.isActive == true) return
+        startedFor = userId
+
         // Cancela a assinatura da conta anterior (se houver).
         observeJob?.cancel()
 

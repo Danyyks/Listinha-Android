@@ -11,7 +11,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +18,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,21 +34,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -60,16 +56,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.listinha.app.R
 import com.listinha.app.data.CATEGORIES
@@ -77,8 +78,14 @@ import com.listinha.app.data.Recipe
 import com.listinha.app.data.RecipeIngredient
 import com.listinha.app.data.categoryColor
 import com.listinha.app.data.categoryLabel
+import com.listinha.app.ui.components.BrandTitle
+import com.listinha.app.ui.components.FilledPill
+import com.listinha.app.ui.components.OutlinePill
+import com.listinha.app.ui.components.dashedBorder
 import com.listinha.app.ui.components.rememberRecipeBitmap
-import com.listinha.app.ui.theme.FredokaFamily
+import com.listinha.app.ui.theme.FrauncesFamily
+import com.listinha.app.ui.theme.LocalFlavor
+import com.listinha.app.ui.theme.LocalPaper
 import com.listinha.app.util.compressImageToBase64
 import com.listinha.app.util.guessIconIndex
 import com.listinha.app.util.ingredientsToText
@@ -178,45 +185,32 @@ fun RecipeFormScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            painterResource(R.drawable.ic_close),
-                            contentDescription = stringResource(R.string.action_close),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
-                },
-                title = {
-                    Text(
-                        stringResource(if (isNew) R.string.form_new else R.string.form_edit),
-                        fontFamily = FredokaFamily,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                actions = {
-                    Button(
-                        onClick = { buildRecipe()?.let(onSave) },
-                        modifier = Modifier.padding(end = 8.dp).height(40.dp),
-                    ) {
-                        Text(stringResource(R.string.action_save), fontWeight = FontWeight.ExtraBold)
-                    }
-                },
+    val flavor = LocalFlavor.current
+
+    Column(Modifier.fillMaxSize().background(flavor.bg).statusBarsPadding().navigationBarsPadding().imePadding()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 20.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(onClick = onCancel) {
+                Icon(
+                    painterResource(R.drawable.ic_close),
+                    contentDescription = stringResource(R.string.action_close),
+                    tint = flavor.title,
+                )
+            }
+            BrandTitle(
+                stringResource(if (isNew) R.string.form_new else R.string.form_edit),
+                fontSize = 32.sp,
+                modifier = Modifier.weight(1f).padding(start = 4.dp),
             )
-        },
-    ) { innerPadding ->
+            FilledPill(stringResource(R.string.action_save), { buildRecipe()?.let(onSave) }, height = 48.dp)
+        }
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
-                .imePadding() // o teclado não cobre o campo que está sendo digitado
+                .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
@@ -246,7 +240,7 @@ fun RecipeFormScreen(
                         singleLine = true,
                         capitalization = KeyboardCapitalization.Sentences,
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val campoTempo: @Composable (Modifier) -> Unit = { campo ->
                         FormField(
                             value = minutes,
                             onValueChange = { v -> minutes = v.filter(Char::isDigit).take(4) },
@@ -254,16 +248,28 @@ fun RecipeFormScreen(
                             suffix = stringResource(R.string.form_minutes_suffix),
                             singleLine = true,
                             keyboardType = KeyboardType.Number,
-                            modifier = Modifier.weight(1f),
+                            modifier = campo,
                         )
+                    }
+                    val campoPorcoes: @Composable (Modifier) -> Unit = { campo ->
                         FormField(
                             value = servings,
                             onValueChange = { v -> servings = v.filter(Char::isDigit).take(2) },
                             label = stringResource(R.string.form_servings),
                             singleLine = true,
                             keyboardType = KeyboardType.Number,
-                            modifier = Modifier.weight(1f),
+                            modifier = campo,
                         )
+                    }
+                    // Lado a lado cabe bem; com fonte grande os rótulos cortariam.
+                    if (LocalDensity.current.fontScale > 1.3f) {
+                        campoTempo(Modifier)
+                        campoPorcoes(Modifier)
+                    } else {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            campoTempo(Modifier.weight(1f))
+                            campoPorcoes(Modifier.weight(1f))
+                        }
                     }
                 }
             }
@@ -343,56 +349,42 @@ fun RecipeFormScreen(
     }
 }
 
-// Cartão roxo "Copiou uma receita? Cole e a gente organiza tudo. [Colar]".
+// Cartão inclinado "Copiou uma receita? Cole e a gente organiza tudo. [Colar]".
 @Composable
 private fun PasteCard(onClick: () -> Unit) {
+    val flavor = LocalFlavor.current
+    val paper = LocalPaper.current
+    val forma = RoundedCornerShape(30.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 2.dp, vertical = 6.dp)
+            .rotate(-1.5f)
+            .shadow(14.dp, forma, ambientColor = paper.shadow, spotColor = paper.shadow)
+            .clip(forma)
+            .background(flavor.title)
             .clickable(onClick = onClick)
-            .padding(start = 16.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+            .padding(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painterResource(R.drawable.ic_clipboard),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(22.dp),
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            BrandTitle(stringResource(R.string.form_paste_title), fontSize = 27.sp, color = flavor.bg)
+            Text(
+                stringResource(R.string.form_paste_text),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = flavor.bg,
             )
         }
         Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(R.string.form_paste_title),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-            Text(
-                stringResource(R.string.form_paste_text),
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-            )
-        }
-        Spacer(Modifier.width(10.dp))
-        Text(
-            stringResource(R.string.form_paste_button),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .clip(RoundedCornerShape(19.dp))
-                .background(MaterialTheme.colorScheme.onPrimary)
-                .padding(horizontal = 16.dp, vertical = 9.dp),
+        FilledPill(
+            text = stringResource(R.string.form_paste_button),
+            onClick = onClick,
+            icon = R.drawable.ic_clipboard,
+            height = 50.dp,
+            container = paper.paper,
+            contentColor = paper.ink,
+            fontSize = 16.sp,
         )
     }
 }
@@ -401,16 +393,13 @@ private fun PasteCard(onClick: () -> Unit) {
 @Composable
 private fun PhotoBox(photo: String, loading: Boolean, onPick: () -> Unit, onRemove: () -> Unit) {
     val bitmap = rememberRecipeBitmap(photo)
-    Box(Modifier.size(112.dp)) {
+    val flavor = LocalFlavor.current
+    Box(Modifier.size(width = 116.dp, height = 136.dp)) {
         Box(
             modifier = Modifier
-                .size(112.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .then(
-                    if (bitmap == null) Modifier.border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp))
-                    else Modifier
-                )
+                .matchParentSize()
+                .clip(RoundedCornerShape(24.dp))
+                .then(if (bitmap == null) Modifier.dashedBorder(flavor.secondary, 24.dp) else Modifier)
                 .clickable(onClick = onPick),
             contentAlignment = Alignment.Center,
         ) {
@@ -426,15 +415,15 @@ private fun PhotoBox(photo: String, loading: Boolean, onPick: () -> Unit, onRemo
                     Icon(
                         painterResource(R.drawable.ic_camera),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(26.dp),
+                        tint = flavor.title,
+                        modifier = Modifier.size(28.dp),
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         stringResource(R.string.form_photo),
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = flavor.title,
                     )
                 }
             }
@@ -444,8 +433,8 @@ private fun PhotoBox(photo: String, loading: Boolean, onPick: () -> Unit, onRemo
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(6.dp)
-                    .size(28.dp)
+                    .size(48.dp)
+                    .padding(10.dp)
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.55f))
                     .clickable(onClick = onRemove),
@@ -479,14 +468,14 @@ private fun FormField(
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = label?.let { { Text(it, fontWeight = FontWeight.Bold) } },
+        label = label?.let { { Text(it, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1) } },
         placeholder = placeholder?.let { { Text(it, lineHeight = 24.sp) } },
         suffix = suffix?.let { { Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
         singleLine = singleLine,
         minLines = minLines,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, capitalization = capitalization),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(lineHeight = 26.sp),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(lineHeight = 26.sp, fontWeight = FontWeight.Bold),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -505,8 +494,15 @@ private fun SectionHeader(title: String, hint: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
     ) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onBackground)
-        Text(hint, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            title,
+            fontFamily = FrauncesFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            letterSpacing = (-0.02).em,
+            color = LocalFlavor.current.text,
+        )
+        Text(hint, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = LocalFlavor.current.secondary)
     }
 }
 
@@ -521,71 +517,94 @@ private fun CategorySummary(ingredients: List<RecipeIngredient>, onReview: () ->
         groups.forEach { (category, count) ->
             Row(
                 modifier = Modifier
-                    .height(30.dp)
-                    .clip(RoundedCornerShape(15.dp))
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(18.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(Modifier.size(8.dp).clip(CircleShape).background(categoryColor(category)))
+                Box(Modifier.size(9.dp).clip(CircleShape).background(categoryColor(category)))
                 Spacer(Modifier.width(6.dp))
                 Text(
                     "${categoryLabel(category)} $count",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
         Text(
             stringResource(R.string.form_review),
-            fontSize = 13.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary,
+            color = LocalFlavor.current.text,
+            textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .clip(RoundedCornerShape(15.dp))
                 .clickable(onClick = onReview)
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
         )
     }
 }
 
-// Caixa "Colar receita": já vem com o que estiver copiado no celular.
+// Folha "Cola aqui": já vem com o que estiver copiado no celular.
 @Composable
 private fun PasteDialog(onDismiss: () -> Unit, onOrganize: (String) -> Unit) {
     val clipboard = LocalClipboardManager.current
+    val paper = LocalPaper.current
+    val flavor = LocalFlavor.current
     var text by remember { mutableStateOf(clipboard.getText()?.text ?: "") }
-    AlertDialog(
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.paste_title)) },
-        text = {
-            Column {
-                Text(
-                    stringResource(R.string.paste_text),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    label = { Text(stringResource(R.string.paste_field)) },
-                    minLines = 6,
-                    maxLines = 10,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.fillMaxWidth(),
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = paper.paper,
+        shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(start = 22.dp, end = 22.dp, bottom = 26.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            BrandTitle(stringResource(R.string.paste_title), fontSize = 32.sp, color = paper.ink)
+            Text(
+                stringResource(R.string.paste_text),
+                fontSize = 15.sp,
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = paper.muted,
+            )
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = { Text(stringResource(R.string.paste_field)) },
+                minLines = 8,
+                maxLines = 10,
+                shape = RoundedCornerShape(20.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = paper.field,
+                    unfocusedContainerColor = paper.field,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinePill(stringResource(R.string.action_cancel), onDismiss, Modifier.weight(1f), height = 54.dp, color = paper.ink, borderColor = paper.line, fontSize = 16.sp)
+                FilledPill(
+                    text = stringResource(R.string.paste_organize),
+                    onClick = { onOrganize(text) },
+                    enabled = text.isNotBlank(),
+                    height = 54.dp,
+                    container = flavor.titleOnPaper,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1.4f),
                 )
             }
-        },
-        confirmButton = {
-            Button(onClick = { onOrganize(text) }, enabled = text.isNotBlank()) {
-                Text(stringResource(R.string.paste_organize), fontWeight = FontWeight.Bold)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-        },
-    )
+        }
+    }
 }
 
 // Caixa "Categorias": cada ingrediente com a categoria que o app escolheu
@@ -598,7 +617,9 @@ private fun ReviewCategoriesDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.form_review_title)) },
+        shape = RoundedCornerShape(28.dp),
+        containerColor = LocalPaper.current.paper,
+        title = { BrandTitle(stringResource(R.string.form_review_title), fontSize = 30.sp, color = LocalPaper.current.ink) },
         text = {
             Column(Modifier.heightIn(max = 440.dp).verticalScroll(rememberScrollState())) {
                 Text(
@@ -624,7 +645,12 @@ private fun ReviewCategoriesDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.form_review_done)) }
+            FilledPill(
+                text = stringResource(R.string.form_review_done),
+                onClick = onDismiss,
+                container = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            )
         },
     )
 }
@@ -636,8 +662,8 @@ private fun CategoryPicker(selected: String, onSelect: (String) -> Unit) {
     Box {
         Row(
             modifier = Modifier
-                .height(34.dp)
-                .clip(RoundedCornerShape(17.dp))
+                .heightIn(min = 44.dp)
+                .clip(RoundedCornerShape(22.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .clickable { expanded = true }
                 .padding(horizontal = 12.dp),

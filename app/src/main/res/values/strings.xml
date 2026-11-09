@@ -3,6 +3,7 @@
   strings.xml  —  todos os TEXTOS visíveis do app ficam aqui.
   Vantagem: centraliza os textos (fácil revisar) e permite
   traduzir o app para outros idiomas sem mexer no código.
+  Títulos da marca marcam a palavra em itálico entre asteriscos.
 -->
 <resources>
     <string name="app_name">Listinha</string>
@@ -21,12 +22,12 @@
     <string name="action_more">Mais opções</string>
 
     <!-- Aba Receitas: grade -->
-    <string name="recipes_title">Receitas</string>
+    <string name="recipes_title">Deu *vontade?*</string>
     <string name="recipes_search">Buscar receita</string>
     <string name="recipes_new">Nova receita</string>
     <string name="recipes_none_found">Nenhuma receita encontrada.</string>
     <string name="recipes_add_to_list">Adicionar ingredientes à lista</string>
-    <string name="recipes_empty_title">Seu caderno de receitas</string>
+    <string name="recipes_empty_title">Seu caderno de *receitas*</string>
     <string name="recipes_empty_text">Guarde suas receitas favoritas e mande os ingredientes pra lista num toque.</string>
     <string name="recipes_empty_create">Criar receita</string>
     <string name="recipes_empty_paste">Colar receita</string>
@@ -45,23 +46,23 @@
     <string name="detail_original">Original</string>
     <string name="detail_ingredients">Ingredientes</string>
     <string name="detail_tap_have">Toque no que já tem</string>
-    <string name="detail_steps">Modo de preparo</string>
+    <string name="detail_steps">Modo de *preparo*</string>
     <string name="detail_cook">Cozinhar</string>
     <string name="detail_add_all">Adicionar à lista</string>
     <string name="detail_add_some">Adicionar %d à lista</string>
     <string name="detail_have_all">Você já tem tudo</string>
     <string name="detail_replace_list">Substituir minha lista</string>
-    <string name="detail_replace_title">Substituir sua lista?</string>
+    <string name="detail_replace_title">Substituir sua *lista?*</string>
     <string name="detail_replace_text">Os itens da sua lista atual serão apagados e os ingredientes desta receita entram no lugar.</string>
     <string name="detail_replace_confirm">Substituir</string>
-    <string name="detail_delete_title">Excluir receita?</string>
+    <string name="detail_delete_title">Excluir *receita?*</string>
     <string name="detail_delete_text">\"%s\" será removida. Essa ação não pode ser desfeita.</string>
     <string name="detail_open_link_error">Não consegui abrir o link.</string>
 
     <!-- Formulário -->
-    <string name="form_new">Nova receita</string>
-    <string name="form_edit">Editar receita</string>
-    <string name="form_paste_title">Copiou uma receita?</string>
+    <string name="form_new">Nova *receita*</string>
+    <string name="form_edit">Editar *receita*</string>
+    <string name="form_paste_title">Copiou uma *receita?*</string>
     <string name="form_paste_text">Cole e a gente organiza tudo.</string>
     <string name="form_paste_button">Colar</string>
     <string name="form_photo">Foto</string>
@@ -81,12 +82,12 @@
     <string name="form_steps_hint">Corte o frango em cubos.\nRefogue com cebola e alho.</string>
     <string name="form_link">Link da receita (opcional)</string>
     <string name="form_need_name">Dê um nome à receita.</string>
-    <string name="form_review_title">Categorias</string>
+    <string name="form_review_title">Revisar *categorias*</string>
     <string name="form_review_text">Toque na categoria para trocar. É assim que os itens vão aparecer na sua lista.</string>
     <string name="form_review_done">Pronto</string>
 
     <!-- Colar receita -->
-    <string name="paste_title">Colar receita</string>
+    <string name="paste_title">Cola *aqui.*</string>
     <string name="paste_text">Cole o texto com nome, ingredientes e modo de preparo. A gente separa tudo.</string>
     <string name="paste_field">Texto da receita</string>
     <string name="paste_organize">Organizar</string>
@@ -96,7 +97,7 @@
     <!-- Modo cozinhar -->
     <string name="cook_exit">Sair do modo cozinhar</string>
     <string name="cook_progress">%1$d de %2$d</string>
-    <string name="cook_prepare">Separe os ingredientes</string>
+    <string name="cook_prepare">Separe os *ingredientes*</string>
     <string name="cook_step">Passo %d</string>
     <string name="cook_screen_on">Tela sempre acesa</string>
     <string name="cook_previous">Anterior</string>

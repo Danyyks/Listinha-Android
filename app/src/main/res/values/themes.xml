@@ -18,11 +18,11 @@
 
     <!--
       Tema da TELA DE ABERTURA (splash). Aparece por 1 instante ao abrir o app:
-      fundo roxo com o carrinho no centro. Depois o app troca para Theme.Listinha
+      fundo açaí com a notinha mordida no centro. Depois o app troca para Theme.Listinha
       (definido em postSplashScreenTheme). Vem da biblioteca core-splashscreen.
     -->
     <style name="Theme.Listinha.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/purple_brand</item>
+        <item name="windowSplashScreenBackground">@color/brand_acai</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.Listinha</item>
     </style>

@@ -3,12 +3,14 @@ package com.listinha.app
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -85,6 +87,13 @@ class MainActivity : ComponentActivity() {
                         onSignIn = { authViewModel.signInWithGoogle(context, webClientId) },
                     )
                 } else {
+                    // Logado, a tela de login não aparece: o erro de excluir a conta vira aviso aqui.
+                    LaunchedEffect(authViewModel.errorMessage) {
+                        authViewModel.errorMessage?.let { erro ->
+                            Toast.makeText(context, erro, Toast.LENGTH_LONG).show()
+                            authViewModel.clearError()
+                        }
+                    }
                     HomeScreen(
                         userId = user.uid,
                         userName = user.displayName,

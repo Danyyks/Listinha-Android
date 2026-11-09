@@ -35,6 +35,7 @@ class RecipeViewModel : ViewModel() {
     // Guarda a "assinatura" atual das receitas para podermos CANCELÁ-LA
     // quando o usuário troca (logout + login, ou outra conta no aparelho).
     private var observeJob: Job? = null
+    private var startedFor: String? = null
 
     // Roda em segundo plano capturando qualquer erro. Além do log, AVISA o
     // usuário via errorMessage (a receita não some "calada" se a escrita falhar).
@@ -57,7 +58,11 @@ class RecipeViewModel : ViewModel() {
     // (Re)inicia o ViewModel para o usuário logado AGORA. A tela chama isto
     // sempre que o uid muda (ver LaunchedEffect na RecipesTab). Assim as
     // receitas de uma conta nunca aparecem para a conta seguinte.
-    fun start() {
+    fun start(userId: String) {
+        // Mesma conta com a assinatura viva (ex.: girou a tela): nada a refazer.
+        if (userId == startedFor && observeJob?.isActive == true) return
+        startedFor = userId
+
         // Cancela a assinatura da conta anterior (se houver) e zera o estado.
         observeJob?.cancel()
         recipes = emptyList()

@@ -3,15 +3,17 @@ package com.listinha.app.ui.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.listinha.app.R
 
 // ============================================================
 //  Type.kt  —  as fontes do app
 // ------------------------------------------------------------
-//  Duas famílias (Google Fonts, gratuitas):
-//   • Nunito  -> corpo e interface (super legível, cantos macios)
-//   • Fredoka -> a marca "Listinha", títulos e nomes de receita
+//  Três famílias (Google Fonts, licença OFL):
+//   • Fraunces -> títulos, com uma palavra em itálico
+//   • Nunito   -> corpo e interface (super legível, cantos macios)
+//   • Fredoka  -> a marca "Listinha", o total e o timer
 //
 //  Um arquivo POR PESO (res/font/nunito_bold.ttf etc.). Antes era
 //  um arquivo "variável" só, mas o Android ignorava o peso pedido e
@@ -34,6 +36,13 @@ val FredokaFamily = FontFamily(
     Font(R.font.fredoka_medium, FontWeight.Medium),     // 500
     Font(R.font.fredoka_semibold, FontWeight.SemiBold), // 600
     Font(R.font.fredoka_bold, FontWeight.Bold),         // 700
+)
+
+// A Fraunces (títulos): gerada com opsz 144, SOFT 100 e WONK 1, como no guia do Estilo Dany.
+val FrauncesFamily = FontFamily(
+    Font(R.font.fraunces_medium, FontWeight.Medium),
+    Font(R.font.fraunces_bold, FontWeight.Bold),
+    Font(R.font.fraunces_bold_italic, FontWeight.Bold, FontStyle.Italic),
 )
 
 // Aplica uma família de fonte em TODOS os estilos de texto do Material 3.

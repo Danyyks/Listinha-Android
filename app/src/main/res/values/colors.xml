@@ -5,6 +5,6 @@
   ficam no Color.kt.
 -->
 <resources>
-    <color name="purple_brand">#6E5A94</color>
-    <color name="window_bg">#EDE7F5</color>
+    <color name="brand_acai">#2B0B3A</color>
+    <color name="window_bg">#2B0B3A</color>
 </resources>

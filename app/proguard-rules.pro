@@ -1,6 +1,18 @@
 # ============================================================
-#  Regras do ProGuard/R8  —  otimização da versão final
+#  Regras do R8  —  otimização da versão da loja
 # ------------------------------------------------------------
-#  Por enquanto está vazio: só vamos usar de verdade na Fase 8,
-#  quando gerarmos o app final para a Play Store.
+#  O app não usa reflexão no próprio código: os dados do Firestore
+#  são lidos e gravados campo a campo. As regras abaixo cuidam do
+#  que as bibliotecas precisam encontrar pelo nome.
 # ============================================================
+
+# Mantém o número da linha nos relatórios de falha do Android vitals.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Login com Google: o Credential Manager carrega o provedor do Play Services pelo nome.
+-if class androidx.credentials.CredentialManager
+-keep class androidx.credentials.playservices.** {
+  *;
+}
+-keep class com.google.android.libraries.identity.googleid.** { *; }
