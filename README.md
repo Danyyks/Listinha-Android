@@ -6,13 +6,13 @@
 
 **Suas receitas viram lista de compras num toque.**
 
-App Android nativo de lista de compras e receitas — organização automática por categoria, controle de gastos em tempo real e um caderno de receitas que faz a compra por você.
+App Android de lista de compras e receitas. Organiza os itens por categoria, acompanha quanto você está gastando e guarda um caderno de receitas que já monta a lista por você.
 
 <br />
 
 ![Em breve na Google Play](https://img.shields.io/badge/Google_Play-Em_breve-2B0B3A?style=for-the-badge&logo=google-play&logoColor=white)
 
-<sub>🚧 Versão 2.0 em validação final na Google Play — link de download em breve.</sub>
+<sub>A versão 2.0 está em análise na Google Play. O link de download chega em breve.</sub>
 
 <br />
 
@@ -31,7 +31,7 @@ App Android nativo de lista de compras e receitas — organização automática 
 
 O **Listinha** é um app Android publicado na **Google Play Store**, feito para quem faz feira e mercado. A ideia nasceu de um problema simples: anotar item por item toda semana é chato e fácil de esquecer algo.
 
-O diferencial está em unir **receitas e lista de compras** no mesmo lugar. Você guarda suas receitas favoritas com foto, ingredientes e modo de preparo — e, quando bate a vontade de cozinhar, um toque em **"Adicionar à lista"** joga todos os ingredientes na sua lista de compras, já organizados por categoria e prontos para o supermercado.
+O diferencial está em unir **receitas e lista de compras** no mesmo lugar. Você guarda suas receitas favoritas com foto, ingredientes e modo de preparo e, quando bate a vontade de cozinhar, um toque em **"Adicionar à lista"** joga todos os ingredientes na sua lista de compras, já organizados por categoria e prontos para o supermercado.
 
 Salvar receita também é fácil: cole o texto de um blog ou compartilhe direto do Instagram, do navegador ou do WhatsApp. Quando os ingredientes e os passos vêm em linhas, o Listinha separa quantidades, categorias e passos sozinho; depois é só revisar. Na hora de cozinhar, o modo passo a passo tem timer e mantém a tela acesa.
 
@@ -69,16 +69,19 @@ Grátis, sem anúncios, com login pelo Google e sincronização na nuvem.
 
 ## Funcionalidades
 
-- 🧾 **Receitas viram lista** — um toque transforma os ingredientes de uma receita em itens da lista de compras.
-- 📖 **Caderno de receitas** — grade estilo Pinterest com fotos grandes; receita sem foto ganha capa automática.
-- 📋 **Salvar sem esforço** — cole uma receita (blog, WhatsApp, Instagram) ou compartilhe de outro app: com o texto em linhas, o Listinha separa nome, ingredientes, quantidades, categorias e passos, e você revisa antes de salvar.
-- 🍳 **Modo cozinhar** — um passo por tela, letra grande, timer em um toque e tela sempre acesa.
-- ⚖️ **Porções ajustáveis** — mude as porções e as quantidades se recalculam; marque o que já tem em casa e só o que falta vai pra lista.
-- 🗂️ **Organização automática** — itens agrupados por categoria (frutas, carnes, mercearia, limpeza e mais).
-- 💰 **Controle de gastos** — defina um orçamento e acompanhe o total da compra em tempo real.
-- 🛒 **Modo compra** — marque os itens enquanto anda pelo supermercado.
-- 🔐 **Login com Google** — dados seguros e sincronizados na nuvem.
-- 🌗 **Tema claro e escuro** — visual leve, sem propaganda.
+Você guarda uma receita e, com um toque, os ingredientes vão para a lista de compras, cada um na sua categoria.
+
+As receitas ficam numa grade com fotos grandes, no estilo do Pinterest. Se uma receita não tem foto, ela ganha uma capa com a inicial do nome.
+
+Para salvar uma receita nova, é só colar o texto de um blog, do WhatsApp ou do Instagram, ou compartilhar direto de outro app. Quando os ingredientes e os passos vêm em linhas separadas, o Listinha separa o nome, as quantidades, as categorias e o modo de preparo, e você só confere antes de salvar.
+
+Na hora de cozinhar, cada passo aparece sozinho na tela, com letra grande, timer em um toque e a tela sempre acesa.
+
+Dá para mudar o número de porções que as quantidades se ajustam sozinhas. Também dá para marcar o que você já tem em casa, assim só o que falta vai para a lista.
+
+Na lista, os itens ficam separados por categoria, como frutas, carnes, mercearia e limpeza. Você pode definir quanto quer gastar e acompanhar o total enquanto compra, e no modo compra é só ir marcando os itens pelos corredores do mercado.
+
+O login é feito com a conta Google, então tudo fica salvo na nuvem. Tem tema claro e escuro, e nenhuma propaganda.
 
 <br />
 
@@ -104,10 +107,10 @@ O app segue **MVVM** com uma separação clara entre dados, lógica de tela e in
 
 ```
 app/src/main/java/com/listinha/app/
-├── auth/            # AuthViewModel — login com Google
+├── auth/            # AuthViewModel: login com Google
 ├── data/            # Modelos e repositórios (Item, Recipe, Profile, Firestore)
-├── list/            # ListViewModel — lista de compras e orçamento
-├── recipes/         # RecipeViewModel — receitas
+├── list/            # ListViewModel: lista de compras e orçamento
+├── recipes/         # RecipeViewModel: receitas
 ├── ui/
 │   ├── components/   # Componentes e peças da marca (BrandKit: notinha, títulos, botões)
 │   ├── screens/      # Telas (Login, Home, Lista, Receitas, Detalhe, Modo cozinhar, Perfil)
@@ -162,13 +165,13 @@ gradle testDebugUnitTest
 
 Regras de segurança, fluxos contra o Firebase Emulator Suite (projeto falso, sem produção) e a vitrine de telas estão em [`docs/testes/README.md`](docs/testes/README.md).
 
-> **Atenção:** o Android usa outro motor de expressões regulares (ICU) que o Java do computador. Uma regra pode passar no teste e quebrar no celular — por isso, depois de mexer em `util/RecipeText.kt` ou `util/Cooking.kt`, abra também a aba Receitas no emulador.
+> **Atenção:** o Android usa outro motor de expressões regulares (ICU) que o Java do computador. Uma regra pode passar no teste e quebrar no celular. Por isso, depois de mexer em `util/RecipeText.kt` ou `util/Cooking.kt`, abra também a aba Receitas no emulador.
 
 <br />
 
 ## Roadmap
 
-- [ ] **Premium com IA** — geração de receitas e sugestões de compra com IA.
+- [ ] **Premium com IA**: geração de receitas e sugestões de compra.
 - [ ] Compartilhar listas entre pessoas da casa.
 - [ ] Histórico de preços e comparação entre compras.
 
@@ -176,7 +179,7 @@ Regras de segurança, fluxos contra o Firebase Emulator Suite (projeto falso, se
 
 ## Autor
 
-Feito por **Dany Jonathan Bueno** — estudante de Análise e Desenvolvimento de Sistemas e desenvolvedor em formação.
+Feito por **Dany Jonathan Bueno**, estudante de Análise e Desenvolvimento de Sistemas e desenvolvedor em formação.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/danyyjonathan)
 [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/danyyjonathan)
