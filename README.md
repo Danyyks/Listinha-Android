@@ -10,9 +10,9 @@ App Android de lista de compras e receitas. Organiza os itens por categoria, aco
 
 <br />
 
-![Em breve na Google Play](https://img.shields.io/badge/Google_Play-Em_breve-2B0B3A?style=for-the-badge&logo=google-play&logoColor=white)
+[![Disponível no Google Play](https://img.shields.io/badge/Google_Play-Baixar_agora-2B0B3A?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.danyks.listinha)
 
-<sub>A versão 2.0 está em análise na Google Play. O link de download chega em breve.</sub>
+<sub>Já está na Google Play, para Android no Brasil.</sub>
 
 <br />
 
